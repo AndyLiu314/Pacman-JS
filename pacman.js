@@ -15,15 +15,32 @@ function getKey(key) {
 		pressed = 1;
 }
 
-// Six Vertices
-var vertices = [
-	vec2( -0.05, 0.95),
-	vec2(  0.05, 0.95),
-	vec2(  0.05, 0.85 ),
-	vec2( -0.05, 0.95),
-	vec2(  0.05, 0.85 ),
-	vec2( -0.05, 0.85 )
+// pacman movement frames
+var pacman_up = [
+	vec2( -0.05, -0.05 ),
+	vec2(  0.0,  0.05 ),
+	vec2(  0.05, -0.05 )    
 ];
+
+var pacman_left = [
+	vec2( -0.05, 0.0 ),
+	vec2(  0.05,  0.05 ),
+	vec2(  0.05, -0.05 )    
+];
+
+var pacman_right = [
+	vec2(  -0.05,  0.05 ),
+	vec2(  -0.05, -0.05 ),  
+	vec2(   0.05, 0.0 )
+];
+
+var pacman_down = [
+	vec2( -0.05, 0.05 ),
+	vec2(  0.05,  0.05 ),
+	vec2(  0.0, -0.05 )    
+];
+
+var map
 
 window.onload = function init() {
 
@@ -43,7 +60,7 @@ window.onload = function init() {
 
 	// Binding the vertex buffer
 	gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-	gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW );   
+	gl.bufferData( gl.ARRAY_BUFFER, flatten(pacman_up), gl.STATIC_DRAW );   
 
 	// Associate out shader variables with our data buffer
 	var vPosition = gl.getAttribLocation( program, "vPosition" );
@@ -70,7 +87,7 @@ function render() {
 	
 	// Clearing the buffer and drawing the square
 	gl.clear( gl.COLOR_BUFFER_BIT ); 
-	gl.drawArrays( gl.TRIANGLES, 0, 6 );
+	gl.drawArrays( gl.TRIANGLES, 0, 3 );
 	
 	window.requestAnimFrame(render);
 }
