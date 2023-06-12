@@ -1,0 +1,23 @@
+body {
+    background-color: powderblue;
+}
+
+.lefttxt{
+    position:absolute;
+    top:50px;
+    left:80px;
+    font-size: 25px;
+}
+
+.righttxt{
+    position:absolute;
+    top:50px;
+    right:400px;font-size: 25px;
+}
+
+.mainframe{
+    position: absolute;
+    top:140px;left:30px;
+    width:455px;height:455px;
+    border:3px solid rgb(5, 49, 194);
+}
