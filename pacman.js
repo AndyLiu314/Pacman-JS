@@ -40,13 +40,13 @@ var pacman_down = [
 	vec2(  0.0, -0.05 )    
 ];
 
-var vertices = [
+var vertexbuffer = [
 	vec2( -0.95, 0.95),
 	vec2(  0.95, 0.95),
-	vec2(  0.95, 0.0 ),
+	vec2(  0.95, -0.95 ),
 	vec2( -0.95, 0.95),
-	vec2(  0.95, 0.0 ),
-	vec2( -0.95, 0.0 )
+	vec2(  0.95, -0.95 ),
+	vec2( -0.95, -0.95 )
 ];
 
 var map = [
@@ -75,7 +75,7 @@ window.onload = function init() {
 
 	// Binding the vertex buffer
 	gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-	gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW );   
+	gl.bufferData( gl.ARRAY_BUFFER, flatten(vertexbuffer), gl.STATIC_DRAW );   
 
 	// Associate out shader variables with our data buffer
 	var vPosition = gl.getAttribLocation( program, "vPosition" );
