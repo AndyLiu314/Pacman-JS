@@ -19,7 +19,7 @@ function getKey(key) {
 var pacman_up = [
 	vec2( -0.05, -0.05 ),
 	vec2(  0.0,  0.05 ),
-	vec2(  0.05, -0.05 )    
+	vec2(  0.05, -0.05 )
 ];
 
 var pacman_left = [
@@ -40,14 +40,29 @@ var pacman_down = [
 	vec2(  0.0, -0.05 )    
 ];
 
-var map
+var vertices = [
+	vec2( -0.95, 0.95),
+	vec2(  0.95, 0.95),
+	vec2(  0.95, 0.0 ),
+	vec2( -0.95, 0.95),
+	vec2(  0.95, 0.0 ),
+	vec2( -0.95, 0.0 )
+];
+
+var map = [
+	[0, 0, 1, 1, 0],
+	[0, 1, 1, 0, 0],
+	[0, 1, 0, 0, 0],
+	[0, 0, 0, 0, 1],
+	[1, 0, 0, 1, 1]
+];
 
 window.onload = function init() {
 
     canvas = document.getElementById( "gl-canvas" );
     
     gl = WebGLUtils.setupWebGL( canvas );
-    if ( !gl ) { alert( "WebGL isn't available" ); }
+    	if ( !gl ) { alert( "WebGL isn't available" ); }
 	gl.viewport( 0, 0, canvas.width, canvas.height );
 	gl.clearColor( 0.5, 0.5, 0.5, 1.0 );
 
@@ -60,7 +75,7 @@ window.onload = function init() {
 
 	// Binding the vertex buffer
 	gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-	gl.bufferData( gl.ARRAY_BUFFER, flatten(pacman_up), gl.STATIC_DRAW );   
+	gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW );   
 
 	// Associate out shader variables with our data buffer
 	var vPosition = gl.getAttribLocation( program, "vPosition" );
@@ -87,7 +102,7 @@ function render() {
 	
 	// Clearing the buffer and drawing the square
 	gl.clear( gl.COLOR_BUFFER_BIT ); 
-	gl.drawArrays( gl.TRIANGLES, 0, 3 );
+	gl.drawArrays( gl.TRIANGLES, 0, 6 );
 	
 	window.requestAnimFrame(render);
 }

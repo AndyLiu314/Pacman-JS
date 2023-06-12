@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
-
-<p id="debug"></p>
+    <head>
+        <link rel="stylesheet" href="style.css">
+      
 <script id="vertex-shader" type="x-shader/x-vertex">
 attribute vec4 vPosition;
 uniform float height;
@@ -28,9 +29,13 @@ main()
 <script type="text/javascript" src="../Common/MV.js"></script>
 <script type="text/javascript" src="pacman.js"></script>
 
+</head>
 <body>
-<canvas id="gl-canvas" width="512" height="512">>
-
+<h1>Pacman</h1>
+<div class="lefttxt">text left</div>
+<div class="righttxt">text right</div>
+<div class="mainframe"></div>
+<p id="debug"></p>
 <canvas id="gl-canvas" width="512" height="512">>
 Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
