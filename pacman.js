@@ -55,6 +55,8 @@ var vertexbuffer = [
 
 var vertexbufferColor = vec4(0.7, 0.7, 0.7, 1.0);
 
+var pacmanColor = vec4(1.0, 0.0, 0.0, 1.0);
+
 var map = [
 	[0, 0, 1, 1, 0],
 	[0, 1, 1, 0, 0],
@@ -71,50 +73,67 @@ window.onload = function init() {
     	if ( !gl ) { alert( "WebGL isn't available" ); }
 
 	gl.viewport( 0, 0, canvas.width, canvas.height );
-	gl.clearColor( 0.5, 0.5, 0.5, 1.0 );
+
 
     //  Load shaders and initialize attribute buffers
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
 	gl.useProgram( program );
 
 	// Creating the vertex buffer
-	vBuffer = gl.createBuffer();
+
 
 	// Binding the vertex buffer
-	gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-	gl.bufferData( gl.ARRAY_BUFFER, flatten(vertexbuffer), gl.STATIC_DRAW );   
 
-	// Associate out shader variables with our data buffer
-	vPosition = gl.getAttribLocation( program, "vPosition" );
-	gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
-	gl.enableVertexAttribArray( vPosition );   
+ 
 
-	attribPosition = gl.getAttribLocation(program, "vPosition")
-	gl.enableVertexAttribArray(attribPosition);
-	gl.vertexAttribPointer( attribPosition, 2, gl.FLOAT, false, 0, 0 );
-	//uniformPosition = gl.getUniformLocation(program, "vPosition");
-	uniformColor = gl.getUniformLocation(program, "vColor");
-	heightLoc = gl.getUniformLocation(program, "height");
-	
 	render();
 }
 
 function render() {
-    
-    // Changing the height value for moving the square
-	if (height > -1.8 && pressed == 1)
-		height = height - 0.01;
+	gl.clearColor( 0.5, 0.5, 0.5, 1.0 );
+	gl.clear( gl.COLOR_BUFFER_BIT ); 
 	
 	// For debugging 
-	console.log(height);
-	document.getElementById("debug").innerHTML = height;
+	//console.log(height);
+	//document.getElementById("debug").innerHTML = height;
 	
-	// Sending the height to the vertex shader
-	gl.uniform1f(heightLoc, height);
-	gl.uniform4fv(uniformColor, vertexbufferColor);
+	// Sending the color to the vertex shader
+
 	
 	// Clearing the buffer and drawing the square
-	gl.clear( gl.COLOR_BUFFER_BIT ); 
+
+
+	// background frame
+	vBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+	gl.bufferData( gl.ARRAY_BUFFER, flatten(vertexbuffer), gl.STATIC_DRAW ); 
+	vPosition = gl.getAttribLocation( program, "vPosition" );
+	gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
+	gl.enableVertexAttribArray( vPosition );   
+
+	//get color location and then send
+	colorLoc = gl.getUniformLocation(program, "uColor");
+	gl.uniform4fv(colorLoc, vertexbufferColor);
+	gl.drawArrays( gl.TRIANGLES, 0, 6 );
+
+	//vPosition = gl.getAttribLocation( program, "vPosition" );
+	//gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
+	//gl.enableVertexAttribArray( vPosition );   
+
+
+
+
+	//pacman
+	vBuffer1 = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer1);
+	gl.bufferData( gl.ARRAY_BUFFER, flatten(pacman_up), gl.STATIC_DRAW ); 
+	vPosition = gl.getAttribLocation( program, "vPosition" );
+	gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
+	gl.enableVertexAttribArray( vPosition );   
+
+	//send color
+	colorLoc = gl.getUniformLocation(program, "uColor");
+	gl.uniform4fv(colorLoc, pacmanColor);
 	gl.drawArrays( gl.TRIANGLES, 0, 6 );
 	
 	window.requestAnimFrame(render);
