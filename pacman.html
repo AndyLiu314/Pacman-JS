@@ -9,18 +9,18 @@ uniform float height;
 void
 main()
 {
-    gl_Position = vPosition + vec4(0, height, 0, 0)  ;
+    gl_Position = vPosition;
 }
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
 
 precision mediump float;
-
+uniform vec4 vColor;
 void
 main()
 {
-    gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );
+    gl_FragColor = vColor;
 }
 </script>
 

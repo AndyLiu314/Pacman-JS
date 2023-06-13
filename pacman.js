@@ -5,6 +5,7 @@ var gl;
 var program
 var height = 0.0;
 var vBuffer;
+var vColor;
 var heightLoc;
 
 // Getting the keyboard input
@@ -47,7 +48,9 @@ var vertexbuffer = [
 	vec2( -0.95, 0.95),
 	vec2(  0.95, -0.95 ),
 	vec2( -0.95, -0.95 )
-];
+]; 
+
+var vertexbufferColor = vec4(1.0, 0.0, 0.0, 1.0);
 
 var map = [
 	[0, 0, 1, 1, 0],
@@ -63,6 +66,7 @@ window.onload = function init() {
     
     gl = WebGLUtils.setupWebGL( canvas );
     	if ( !gl ) { alert( "WebGL isn't available" ); }
+
 	gl.viewport( 0, 0, canvas.width, canvas.height );
 	gl.clearColor( 0.5, 0.5, 0.5, 1.0 );
 
@@ -81,7 +85,8 @@ window.onload = function init() {
 	var vPosition = gl.getAttribLocation( program, "vPosition" );
 	gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
 	gl.enableVertexAttribArray( vPosition );   
-    
+
+	vColor = gl.getUniformLocation(program, "vColor");
 	heightLoc = gl.getUniformLocation(program, "height");
 	
 	render();
@@ -99,6 +104,7 @@ function render() {
 	
 	// Sending the height to the vertex shader
 	gl.uniform1f(heightLoc, height);
+	gl.uniform4fv(vColor, vertexbufferColor);
 	
 	// Clearing the buffer and drawing the square
 	gl.clear( gl.COLOR_BUFFER_BIT ); 
