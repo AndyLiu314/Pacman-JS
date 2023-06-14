@@ -166,7 +166,7 @@ function render() {
 	
 	// For debugging 
 	//console.log(height);
-	document.getElementById("debug").innerHTML = debug;
+	//document.getElementById("debug").innerHTML = debug;
 
 	drawShape(gl.TRIANGLES, pathBuffer, 6, pathbufferColor);
 	drawShape(gl.TRIANGLES, pacman_up, 3, pacmanColor);
