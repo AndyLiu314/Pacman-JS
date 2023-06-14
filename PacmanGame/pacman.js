@@ -173,6 +173,7 @@ function render() {
 
 	drawShape(gl.TRIANGLES, newWall, 6, wallColor);
 	drawShape(gl.TRIANGLES, newWall2, 6, wallColor);
+
 	/*
 	drawShape(gl.TRIANGLES, newWall3, 6, wallColor);
 	drawShape(gl.TRIANGLES, newWall4, 6, wallColor);
@@ -180,6 +181,7 @@ function render() {
 	drawShape(gl.TRIANGLES, newWall6, 6, wallColor);
 	drawShape(gl.TRIANGLES, newWall7, 6, wallColor);
 	drawShape(gl.TRIANGLES, newWall8, 6, wallColor);*/ 
+	
 	drawShape(gl.TRIANGLES, wall, 6, wallColor);
 	
 	/*
