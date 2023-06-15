@@ -1,23 +1,37 @@
 body {
-    background-color: powderblue;
+    background-color: rgb(180, 46, 46);
 }
 
 .lefttxt{
     position:absolute;
-    top:50px;
-    left:40px;
+    top:10px;
+    left:45px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
     font-size: 25px;
+    color: aliceblue;
 }
 
 .righttxt{
     position:absolute;
-    top:50px;
-    left:250px;font-size: 25px;
+    top:10px;
+    left:320px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    font-size: 25px;
+    color: aliceblue;
 }
 
 .mainframe{
     position: absolute;
-    top:118px;left:41px;
+    top:46px;left:41px;
     width:291px;height:322px;
     border:2px solid rgb(20, 57, 177);
+}
+
+.centerframe{
+    position: absolute;
+    top:176px;left:172px;
+    width:30px;height:60px;
+    border:2px dashed rgb(20, 57, 177);
 }
