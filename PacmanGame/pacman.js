@@ -15,11 +15,18 @@ function getKey(key) {
 }
 
 // pacman movement frames
-var pacman_up = [
-	vec2(  -0.85,  0.90 ),
-	vec2( -0.80, 0.80 ),
-	vec2(  -0.90, 0.80 )
+const pacman_up = [
+	vec2(  -0.66,  0.67 ),
+	vec2( -0.72, 0.79 ),
+	vec2(  -0.78, 0.67)
 ];
+
+/* DEFAULT
+var pacman_up = [
+	vec2(  -0.63,  0.65 ),
+	vec2( -0.72, 0.81 ),
+	vec2(  -0.81, 0.65)
+]; */
 
 var pacman_left = [
 	vec2( -0.05, 0.0 ),
@@ -39,24 +46,25 @@ var pacman_down = [
 	vec2(  0.0, -0.05 )    
 ];
 
-var pathBuffer = [
-	vec2( -0.90, 0.90),
-	vec2(  0.90, 0.90),
-	vec2(  0.90, -0.90),
-	vec2( -0.90, 0.90),
-	vec2(  0.90, -0.90),
-	vec2(  -0.90, -0.90),
+const pathBuffer = [
+	vec2( -0.81, 0.81),
+	vec2(  0.81, 0.81),
+	vec2(  0.81, -0.81),
+	vec2( -0.81, 0.81),
+	vec2(  0.81, -0.81),
+	vec2(  -0.81, -0.81),
 ]; 
 
 const wall = [
-	vec2( -0.90, 0.90),
-	vec2(  -0.70, 0.90),
-	vec2(  -0.70, 0.70),
-	vec2( -0.90, 0.90),
-	vec2(  -0.70, 0.70),
-	vec2(  -0.90, 0.70),
+	vec2( -0.81, 0.81),
+	vec2(  -0.63, 0.81),
+	vec2(  -0.63, 0.648),
+	vec2( -0.81, 0.81),
+	vec2(  -0.63, 0.648),
+	vec2(  -0.81, 0.648),
 ];
 
+/*
 var wall2 = [
 	[-0.90, 0.90],
 	[-0.70, 0.90],
@@ -64,7 +72,7 @@ var wall2 = [
 	[-0.90, 0.90],
 	[-0.70, 0.70],
 	[-0.90, 0.70]
-];
+];*/
 
 var pathbufferColor = vec4(0.8, 0.8, 0.8, 1.0);
 
@@ -85,8 +93,8 @@ var tilemap = [
 	[1, 0, 0, 0, 1, 0, 0, 0, 1],
 	[1, 0, 0, 0, 1, 0, 0, 0, 1],
 	[1, 1, 1, 1, 1, 1, 1, 1, 1],
-	[1, 0, 0, 0, 0, 0, 0, 0, 1],
-	[1, 0, 0, 0, 0, 0, 0, 0, 1],
+	[1, 0, 1, 1, 0, 1, 1, 0, 1],
+	[1, 0, 1, 1, 0, 1, 1, 0, 1],
 	[1, 1, 1, 1, 1, 1, 1, 1, 1],
 	[1, 0, 0, 0, 1, 0, 0, 0, 1],
 	[1, 0, 0, 0, 1, 0, 0, 0, 1],
@@ -122,17 +130,19 @@ function drawShape(type, vertices, n, color) {
 
 function translateObject(vertices, row, column, amountX, amountY) {
 	var newVertices = [];
-	//newVertices = vertices;
+	// copy vertices into new array to prevent vertices form being modified
+	// vertices is used as a default render of an object
+	// the coordinates of the default render always start at the top left corner of the map 
 	for (let i = 0; i < vertices.length; i++) {
 		newVertices.push(vec2(vertices[i][0], vertices[i][1]));
 	}
 
+	// applies translation
 	for (let i = 0; i < newVertices.length; i++){
 		let vertex = newVertices[i];
-		newVertices[i] = vec2(vertex[0] + row*amountX, vertex[1] - column*amountY);
+		newVertices[i] = vec2(vertex[0] + column*amountX, vertex[1] - row*amountY);
 		//debug = newVertices[i][0];
 	}
-
 	return newVertices;
 }
 
@@ -147,17 +157,6 @@ window.onload = function init() {
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
 	gl.useProgram( program );
 
-
-	newWall = translateObject(wall,1,0,0.2,0.2)
-	newWall2 = translateObject(wall,2,0,0.2,0.2)
-	newWall3 = translateObject(wall,3,0,0.2,0.2)
-	newWall4 = translateObject(wall,4,0,0.2,0.2)
-	newWall5 = translateObject(wall,5,0,0.2,0.2)
-	newWall6 = translateObject(wall,6,0,0.2,0.2)
-	newWall7 = translateObject(wall,7,0,0.2,0.2)
-	newWall8 = translateObject(wall,8,0,0.2,0.2)
-	newWall9 = translateObject(wall,9,0,0.2,0.2)
-	//newWall2 = translateObject(wall,3,0,0.2,0.2)
 	render();
 }
 
@@ -169,31 +168,23 @@ function render() {
 	//document.getElementById("debug").innerHTML = debug;
 
 	drawShape(gl.TRIANGLES, pathBuffer, 6, pathbufferColor);
-	drawShape(gl.TRIANGLES, pacman_up, 3, pacmanColor);
-
-	drawShape(gl.TRIANGLES, newWall, 6, wallColor);
-	drawShape(gl.TRIANGLES, newWall2, 6, wallColor);
-
-	/*
-	drawShape(gl.TRIANGLES, newWall3, 6, wallColor);
-	drawShape(gl.TRIANGLES, newWall4, 6, wallColor);
-	drawShape(gl.TRIANGLES, newWall5, 6, wallColor);
-	drawShape(gl.TRIANGLES, newWall6, 6, wallColor);
-	drawShape(gl.TRIANGLES, newWall7, 6, wallColor);
-	drawShape(gl.TRIANGLES, newWall8, 6, wallColor);*/ 
+	//drawShape(gl.TRIANGLES, pacman_up, 3, pacmanColor);	
+	//drawShape(gl.TRIANGLES, wall, 6, wallColor);
 	
-	drawShape(gl.TRIANGLES, wall, 6, wallColor);
-	
-	/*
 	for (let row = 0; row < tilemap.length; row++){
 		for (let column = 0; column < tilemap[0].length; column++){
 			let grid = tilemap[row][column];
 			if (grid == 0){
-				//let translateWall = translateObject(wall, row, column, 0.2, 0.2);
-				//drawShape(gl.TRIANGLES, translateWall, 6, wallColor);
+				let translateWall = translateObject(wall, row, column, 0.18, 0.162);
+				drawShape(gl.TRIANGLES, translateWall, 6, wallColor);
+			}
+
+			if (grid == 2){
+				let translatePacman = translateObject(pacman_up, row, column, 0.18, 0.162);
+				drawShape(gl.TRIANGLES, translatePacman, 3, pacmanColor);
 			}
 		}
-	}*/
+	}
 	
 	window.requestAnimFrame(render);
 }
