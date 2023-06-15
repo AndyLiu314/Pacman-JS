@@ -10,8 +10,19 @@ var program
 window.addEventListener("keydown", getKey, false);
 var pressed = 0;
 function getKey(key) {
-	if (key.key == "ArrowDown")
+	if (key.key == "ArrowUp"){
+		//alert("key Up");
 		pressed = 1;
+	}else if (key.key == "ArrowDown"){
+		//alert("key Down");
+		pressed = 2;
+	}else if (key.key == "ArrowLeft"){
+		//alert("key Left");
+		pressed = 3;
+	}else if (key.key == "ArrowRight"){
+		//alert("key Right");
+		pressed = 4;
+	}
 }
 
 // pacman movement frames
@@ -146,6 +157,23 @@ function translateObject(vertices, row, column, amountX, amountY) {
 	return newVertices;
 }
 
+function renderMap(tilemap) {
+	for (let row = 0; row < tilemap.length; row++){
+		for (let column = 0; column < tilemap[0].length; column++){
+			let grid = tilemap[row][column];
+			if (grid == 0){
+				let translateWall = translateObject(wall, row, column, 0.18, 0.162);
+				drawShape(gl.TRIANGLES, translateWall, 6, wallColor);
+			}
+
+			if (grid == 2){
+				let translatePacman = translateObject(pacman_up, row, column, 0.18, 0.162);
+				drawShape(gl.TRIANGLES, translatePacman, 3, pacmanColor);
+			}
+		}
+	}
+}
+
 window.onload = function init() {
     canvas = document.getElementById( "gl-canvas" );
     gl = WebGLUtils.setupWebGL( canvas );
@@ -168,23 +196,11 @@ function render() {
 	//document.getElementById("debug").innerHTML = debug;
 
 	drawShape(gl.TRIANGLES, pathBuffer, 6, pathbufferColor);
+	renderMap(tilemap);
 	//drawShape(gl.TRIANGLES, pacman_up, 3, pacmanColor);	
 	//drawShape(gl.TRIANGLES, wall, 6, wallColor);
 	
-	for (let row = 0; row < tilemap.length; row++){
-		for (let column = 0; column < tilemap[0].length; column++){
-			let grid = tilemap[row][column];
-			if (grid == 0){
-				let translateWall = translateObject(wall, row, column, 0.18, 0.162);
-				drawShape(gl.TRIANGLES, translateWall, 6, wallColor);
-			}
 
-			if (grid == 2){
-				let translatePacman = translateObject(pacman_up, row, column, 0.18, 0.162);
-				drawShape(gl.TRIANGLES, translatePacman, 3, pacmanColor);
-			}
-		}
-	}
 	
 	window.requestAnimFrame(render);
 }
