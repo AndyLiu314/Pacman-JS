@@ -5,27 +5,33 @@ var canvas;
 var gl;
 var debug
 var program
+var pressed = 0;
 
 // Getting the keyboard input
 window.addEventListener("keydown", getKey, false);
-var pressed = 0;
 function getKey(key) {
 	if (key.key == "ArrowUp"){
 		//alert("key Up");
 		pressed = 1;
-	}else if (key.key == "ArrowDown"){
+	} else if (key.key == "ArrowDown"){
 		//alert("key Down");
 		pressed = 2;
-	}else if (key.key == "ArrowLeft"){
+	} else if (key.key == "ArrowLeft"){
 		//alert("key Left");
 		pressed = 3;
-	}else if (key.key == "ArrowRight"){
+	} else if (key.key == "ArrowRight"){
 		//alert("key Right");
 		pressed = 4;
 	}
 }
 
 // pacman movement frames
+var pacman = [
+	vec2(  -0.66,  0.67 ),
+	vec2( -0.72, 0.79 ),
+	vec2(  -0.78, 0.67)
+];
+
 const pacman_up = [
 	vec2(  -0.66,  0.67 ),
 	vec2( -0.72, 0.79 ),
@@ -39,22 +45,22 @@ var pacman_up = [
 	vec2(  -0.81, 0.65)
 ]; */
 
-var pacman_left = [
-	vec2( -0.05, 0.0 ),
-	vec2(  0.05,  0.05 ),
-	vec2(  0.05, -0.05 )    
+const pacman_left = [
+	vec2( -0.65, 0.77  ),
+	vec2(  -0.78,  0.72 ),
+	vec2(  -0.65, 0.67 )    
 ];
 
-var pacman_right = [
-	vec2(  -0.05,  0.05 ),
-	vec2(  -0.05, -0.05 ),  
-	vec2(   0.05, 0.0 )
+const pacman_right = [
+	vec2(  -0.78,  0.77 ),
+	vec2(  -0.65, 0.72 ),  
+	vec2(   -0.78, 0.67 )
 ];
 
-var pacman_down = [
-	vec2( -0.05, 0.05 ),
-	vec2(  0.05,  0.05 ),
-	vec2(  0.0, -0.05 )    
+const pacman_down = [
+	vec2( -0.66, 0.78 ),
+	vec2(  -0.72,  0.66 ),
+	vec2(  -0.78, 0.78 )    
 ];
 
 const ghost1 = [
@@ -93,16 +99,6 @@ const wall = [
 	vec2(  -0.81, 0.648),
 ];
 
-/*
-var wall2 = [
-	[-0.90, 0.90],
-	[-0.70, 0.90],
-	[-0.70, 0.70],
-	[-0.90, 0.90],
-	[-0.70, 0.70],
-	[-0.90, 0.70]
-];*/
-
 // Create the vertex data for the circle
 const center = vec2(-0.72, 0.729); // Center of the circle
 const radius = 0.0245;            // Radius of the circle
@@ -117,11 +113,11 @@ for (let i = 0; i <= numSegments; i++) {
     foodDot.push(vec2(x, y));
 }
 
-var pathbufferColor = vec4(0.85, 0.85, 0.85, 1.0);
-var pacmanColor = vec4(0.0, 0.0, 1.0, 1.0);
-var wallColor = vec4(0.0, 0.6, 0.0, 1.0);
-var pacfoodColor = vec4(0.55, 0.55, 0.0, 1.0);
-var ghostColor = [vec4(0.85, 0.0, 0.0, 1.0), vec4(0.0, 0.85, 0.85, 1.0)]; 
+const pathbufferColor = vec4(0.85, 0.85, 0.85, 1.0);
+const pacmanColor = vec4(0.0, 0.0, 1.0, 1.0);
+const wallColor = vec4(0.0, 0.6, 0.0, 1.0);
+const pacfoodColor = vec4(0.55, 0.55, 0.0, 1.0);
+const ghostColor = [vec4(0.85, 0.0, 0.0, 1.0), vec4(0.0, 0.85, 0.85, 1.0)]; 
 
 // 0 = wall
 	// 0.1 = center wall
@@ -173,7 +169,7 @@ function drawShape(type, vertices, n, color) {
 }
 
 function translateObject(vertices, row, column, amountX, amountY) {
-	var newVertices = [];
+	const newVertices = [];
 	// copy vertices into new array to prevent vertices form being modified
 	// vertices is used as a default render of an object
 	// the coordinates of the default render always start at the top left corner of the map 
@@ -190,6 +186,42 @@ function translateObject(vertices, row, column, amountX, amountY) {
 	return newVertices;
 }
 
+function movePacman(tilemap){
+	// first find row and column of pacman
+	const search = 2;
+	let row = tilemap.findIndex(row => row.includes(search));
+	let col = tilemap[row].indexOf(search)
+
+	// then check what key is pressed to determine direction
+	// then check if the movement is allowed (key press is within bounds of tilemap)
+	// then change tilemap[row][column] and move pacman ('2') to another grid
+	if (pressed == 1){
+		if(row > 0 && (tilemap[row-1][col] ==  1 || tilemap[row-1][col] ==  3)){
+			tilemap[row-1][col] = 2;
+			tilemap[row][col] = 1;
+		}
+	}
+	else if (pressed == 2){
+		if(row < 9 && (tilemap[row+1][col] ==  1 || tilemap[row+1][col] ==  3)){
+			tilemap[row+1][col] = 2;
+			tilemap[row][col] = 1;
+		}
+	}
+	else if (pressed == 3){
+		if(col > 0 && (tilemap[row][col-1] ==  1 || tilemap[row][col-1] ==  3)){
+			tilemap[row][col-1] = 2;
+			tilemap[row][col] = 1;
+		}
+	}
+	else if (pressed == 4){
+		if(col < 8 && (tilemap[row][col+1] ==  1 || tilemap[row][col+1] ==  3)){
+			tilemap[row][col+1] = 2;
+			tilemap[row][col] = 1;
+		}
+	}
+	return tilemap;
+}
+
 function renderMap(tilemap) {
 	for (let row = 0; row < tilemap.length; row++){
 		for (let column = 0; column < tilemap[0].length; column++){
@@ -200,7 +232,20 @@ function renderMap(tilemap) {
 			}
 
 			else if (grid == 2){
-				let translatePacman = translateObject(pacman_up, row, column, 0.18, 0.162);
+				if (pressed == 1){
+					pacman = pacman_up;
+					pressed = 0;
+				} else if (pressed == 2){
+					pacman = pacman_down;
+					pressed = 0;
+				} else if (pressed == 3){
+					pacman = pacman_left;
+					pressed = 0;
+				} else if (pressed == 4){
+					pacman = pacman_right;
+					pressed = 0;
+				}
+				let translatePacman = translateObject(pacman, row, column, 0.18, 0.162);
 				drawShape(gl.TRIANGLES, translatePacman, 3, pacmanColor);
 			}
 
@@ -238,21 +283,8 @@ window.onload = function init() {
 
 function render() {
 	gl.clear( gl.COLOR_BUFFER_BIT ); 
-	
-	// For debugging 
-	//document.getElementById("debug").innerHTML = debug;
-
 	drawShape(gl.TRIANGLES, pathBuffer, 6, pathbufferColor);
-	
-	//drawShape(gl.TRIANGLE_FAN, vertices, numSegments + 2, pacfoodColor);
-	//drawShape(gl.TRIANGLES, pacman_up, 3, pacmanColor);	
-	//let translatePacfood = translateObject(vertices, 1, 1, 0.18, 0.162);
-	//drawShape(gl.TRIANGLE_FAN, translatePacfood, numSegments + 2, pacfoodColor);
-
-
-	//let translateGhost1 = translateObject(ghost1, 3, 4, 0.18, 0.162);
-	//drawShape(gl.TRIANGLES, ghost1, 6, ghostColor[0]);
-
+	tilemap = movePacman(tilemap);
 	renderMap(tilemap);
 	window.requestAnimFrame(render);
 }
