@@ -6,6 +6,8 @@ var gl;
 var debug
 var program
 var pressed = 0;
+var score = 0;
+var time = 60;
 
 // Getting the keyboard input
 window.addEventListener("keydown", getKey, false);
@@ -197,24 +199,44 @@ function movePacman(tilemap){
 	// then change tilemap[row][column] and move pacman ('2') to another grid
 	if (pressed == 1){
 		if(row > 0 && (tilemap[row-1][col] ==  1 || tilemap[row-1][col] ==  3)){
+			if (tilemap[row-1][col] ==  3){
+				score += 100;
+				//console.log(score);
+				document.getElementById("score").innerText =  score.toString();			
+			}			
 			tilemap[row-1][col] = 2;
 			tilemap[row][col] = 1;
 		}
 	}
 	else if (pressed == 2){
 		if(row < 9 && (tilemap[row+1][col] ==  1 || tilemap[row+1][col] ==  3)){
+			if (tilemap[row+1][col] ==  3){
+				score += 100;
+				//console.log(score);
+				document.getElementById("score").innerText = score.toString();
+			}			
 			tilemap[row+1][col] = 2;
 			tilemap[row][col] = 1;
 		}
 	}
 	else if (pressed == 3){
 		if(col > 0 && (tilemap[row][col-1] ==  1 || tilemap[row][col-1] ==  3)){
+			if (tilemap[row][col-1] ==  3){
+				score += 100;
+				//console.log(score);
+				document.getElementById("score").innerText = score.toString();				
+			}			
 			tilemap[row][col-1] = 2;
 			tilemap[row][col] = 1;
 		}
 	}
 	else if (pressed == 4){
 		if(col < 8 && (tilemap[row][col+1] ==  1 || tilemap[row][col+1] ==  3)){
+			if (tilemap[row][col+1] ==  3){
+				score += 100;
+				//console.log(score);
+				document.getElementById("score").innerText = score.toString();					
+			}
 			tilemap[row][col+1] = 2;
 			tilemap[row][col] = 1;
 		}
@@ -266,6 +288,14 @@ function renderMap(tilemap) {
 		}
 	}
 }
+
+function myClock() {
+	let second = time;
+	document.getElementById("timer").innerText = second;
+	time--;
+}
+
+setInterval(myClock, 1000);
 
 window.onload = function init() {
     canvas = document.getElementById( "gl-canvas" );

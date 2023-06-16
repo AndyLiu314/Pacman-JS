@@ -2,7 +2,7 @@ body {
     background-color: rgb(180, 46, 46);
 }
 
-.lefttxt{
+.timer{
     position:absolute;
     top:10px;
     left:45px;
@@ -12,10 +12,19 @@ body {
     color: aliceblue;
 }
 
-.righttxt{
-    position:absolute;
-    top:10px;
-    left:320px;
+.score-wrapper {
+    position: absolute;
+    top: 10px;
+    left: 131px; /* Adjust the left position as needed */
+    width: 200px; /* Adjust the width of the box as needed */
+    height: 35px; /* Adjust the height of the box as needed */
+    background-color: rgba(0, 0, 0, 0); /* Adjust the background color of the box as needed */
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  
+.score {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: 600;
     font-size: 25px;
