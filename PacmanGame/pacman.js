@@ -8,6 +8,8 @@ var program
 var pressed = 0;
 var score = 0;
 var time = 60;
+var timerInterval; 
+var isGameOver = false;
 
 // Getting the keyboard input
 window.addEventListener("keydown", getKey, false);
@@ -290,12 +292,34 @@ function renderMap(tilemap) {
 }
 
 function myClock() {
-	let second = time;
-	document.getElementById("timer").innerText = second;
-	time--;
+	if (time >= 0) {
+		let second = time;
+		document.getElementById("timer").innerText = second;
+		time--;
+	} else {
+        gameOver();
+	}
 }
 
-setInterval(myClock, 1000);
+function dotsCleared(tilemap) {
+	for (let i = 0; i < tilemap.length; i++) {
+	  for (let j = 0; j < tilemap[i].length; j++) {
+		if (tilemap[i][j] === 3) {
+		  return; // 3's still exist, return false
+		}
+	  }
+	}
+	gameOver();
+	return; // All 3's cleared, return true
+  }
+
+function gameOver() {
+    // Perform game over actions
+    // For example: show a message, stop the game loop, etc.
+    clearInterval(timerInterval); // Stop the timer
+    // Additional game over logic...
+	isGameOver = true;
+}
 
 window.onload = function init() {
     canvas = document.getElementById( "gl-canvas" );
@@ -308,10 +332,19 @@ window.onload = function init() {
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
 	gl.useProgram( program );
 
+	timerInterval = setInterval(myClock, 1000);
 	render();
 }
 
 function render() {
+	dotsCleared(tilemap);
+	if (isGameOver){
+		let finalscore = score + (time+1)*100;
+		let message = "Game Over. Final Score: " + finalscore;
+		alert(message);
+		return;
+	}
+
 	gl.clear( gl.COLOR_BUFFER_BIT ); 
 	drawShape(gl.TRIANGLES, pathBuffer, 6, pathbufferColor);
 	tilemap = movePacman(tilemap);
