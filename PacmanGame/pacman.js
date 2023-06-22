@@ -9,10 +9,13 @@ var pressed = 0;
 var score = 0;
 var time = 60;
 var timerInterval; 
+var ghostInterval;
 var isGameOver = false;
 var pacmanCoord = [9,4]; // Coordinates are written in the form [Row, Column]
 var ghost1Coord = [4,4]; 
 var ghost2Coord = [5,4];
+var ghostMove = 0;
+var ghostMove1 = 0;
 
 // Getting the keyboard input
 window.addEventListener("keydown", getKey, false);
@@ -193,9 +196,6 @@ function translateObject(vertices, row, column, amountX, amountY) {
 
 function movePacman(tilemap){
 	// first find row and column of pacman
-	//const search = 2;
-	//let row = tilemap.findIndex(row => row.includes(search));
-	//let col = tilemap[row].indexOf(search);
 	let row = pacmanCoord[0];
 	let col = pacmanCoord[1];
 
@@ -258,49 +258,57 @@ function movePacman(tilemap){
 	return tilemap;
 }
 
-function moveGhost(tilemap){
-	//const search = 4;
-	//let row = tilemap.findIndex(row => row.includes(ghostNum));
-	//let col = tilemap[row].indexOf(ghostNum);
-	let row = ghost1Coord[0];
-	let col = ghost1Coord[1];
+function generateRandomNum(tilemap, ghost1Coord, pacmanCoord) {
+	let num1 = Math.floor(Math.random()*4 + 1); // random number from 1 to 4
+	ghostMove = num1;
+
+	let num2 = Math.floor(Math.random()*4 + 1); // random number from 1 to 4
+	ghostMove1 = num2;
+}
+
+function moveGhost(tilemap, ghostCoord, ghostMove){
+	let row = ghostCoord[0];
+	let col = ghostCoord[1];
+	//console.log(ghostMove);
 
 	// up
-	if (pressed == 1){
+	if (ghostMove == 1){
 		if(row > 0 && (tilemap[row-1][col] != 0)){		
 			//tilemap[row-1][col] = ghostNum;
 			//tilemap[row][col] = 1;
-			ghost1Coord[0] = row - 1;
+			ghostCoord[0] = row - 1;
 		}
 	}
 	// down
-	else if (pressed == 2){
+	else if (ghostMove == 2){
 		if(row < 9 && (tilemap[row+1][col] != 0)){			
 			//tilemap[row+1][col] = 2;
 			//tilemap[row][col] = 1;
-			ghost1Coord[0] = row + 1;
+			ghostCoord[0] = row + 1;
 		}
 	}
 	// left
-	else if (pressed == 3){
+	else if (ghostMove == 3){
 		if(col > 0 && (tilemap[row][col-1] != 0)){		
 			//tilemap[row][col-1] = 2;
 			//tilemap[row][col] = 1;
-			ghost1Coord[1] = col - 1;
+			ghostCoord[1] = col - 1;
 		}
 	}
 	// right
-	else if (pressed == 4){
+	else if (ghostMove == 4){
 		if(col < 8 && (tilemap[row][col+1] != 0)){
 			//tilemap[row][col+1] = 2;
 			//tilemap[row][col] = 1;
-			ghost1Coord[1] = col + 1;
+			ghostCoord[1] = col + 1;
 		}
 	}
 
 	// add an if statement that checks if pacman coords are the same as ghost coords
 	// if so take away 500 points
 	// DO NOT RESET COORDINATES HERE (DONE IN RENDER MAP FUNC)
+
+	return ghostCoord;
 }
 
 function renderMap(tilemap) {
@@ -348,6 +356,8 @@ function renderMap(tilemap) {
 	// do same thing here for other ghost
 	let translateGhost2 = translateObject(ghost2, ghost2Coord[0], ghost2Coord[1], 0.18, 0.162);
 	drawShape(gl.TRIANGLES, translateGhost2, 6, ghostColor[1]);
+	ghostMove = 0;
+	ghostMove1 = 0; 
 }
 
 function myClock() {
@@ -376,6 +386,7 @@ function gameOver() {
     // Perform game over actions
     // For example: show a message, stop the game loop, etc.
     clearInterval(timerInterval); // Stop the timer
+	clearInterval(ghostInterval);
     // Additional game over logic...
 	isGameOver = true;
 }
@@ -392,6 +403,7 @@ window.onload = function init() {
 	gl.useProgram( program );
 
 	timerInterval = setInterval(myClock, 1000);
+	ghostInterval = setInterval(generateRandomNum, 250);
 	render();
 }
 
@@ -407,7 +419,8 @@ function render() {
 	gl.clear( gl.COLOR_BUFFER_BIT ); 
 	drawShape(gl.TRIANGLES, pathBuffer, 6, pathbufferColor);
 	tilemap = movePacman(tilemap);
-	// call move ghost here
+	ghost1Coord = moveGhost(tilemap, ghost1Coord, ghostMove);
+	ghost2Coord = moveGhost(tilemap, ghost2Coord, ghostMove1);
 	renderMap(tilemap);
 	window.requestAnimFrame(render);
 }
