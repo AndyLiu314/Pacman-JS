@@ -264,6 +264,7 @@ function generateRandomNum(tilemap, ghost1Coord, pacmanCoord) {
 
 	let num2 = Math.floor(Math.random()*4 + 1); // random number from 1 to 4
 	ghostMove1 = num2;
+	//maybe make it so that ghosts dont run into walls
 }
 
 function moveGhost(tilemap, ghostCoord, ghostMove){
