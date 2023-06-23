@@ -15,6 +15,8 @@ var isGameOver = false;
 var isHit = false;
 var isInvincible = false;
 var isPaused = false; 
+var pressedShift = false;
+var pressedR = false;
 var pacmanCoord = [9,4]; // Coordinates are written in the form [Row, Column], where row and column refer to the 2d array
 var ghost1Coord = [4,4]; 
 var ghost2Coord = [5,4];
@@ -22,24 +24,40 @@ var ghostMove = 0; // Tracks movement of the ghosts
 var ghostMove1 = 0;
 
 // Getting the keyboard input
+var keyPressed = {};
 window.addEventListener("keydown", getKey, false);
 function getKey(key) {
+	keyPressed[key.key + key.location] = true;
 	if (key.key == "ArrowUp" && !isPaused){
-		//alert("key Up");
 		pressed = 1;
 	} else if (key.key == "ArrowDown" && !isPaused){
-		//alert("key Down");
 		pressed = 2;
 	} else if (key.key == "ArrowLeft" && !isPaused){
-		//alert("key Left");
 		pressed = 3;
 	} else if (key.key == "ArrowRight" && !isPaused){
-		//alert("key Right");
 		pressed = 4;
 	} else if (key.key == "p") {
 		pauseGame();
+	} else if (key.key == "Shift"){
+		pressedShift = true;
+		restartGame();
 	} else if (key.key == "r") {
+		pressedR = true;
 		resumeGame();
+	} else if (key.key == "R") {
+		pressedR = true;
+		restartGame();
+	}
+}
+
+window.addEventListener("keyup", getKeyUp, false);
+function getKeyUp(key) {
+	if (key.key === "Shift") {
+		pressedShift = false;
+	} else if (key.key === "r") {
+		pressedR = false;
+	} else if (key.key === "R") {
+		pressedR = false;
 	}
 }
 
@@ -433,15 +451,26 @@ function myClock() {
 function pauseGame() {
 	clearInterval(timerInterval);
 	clearInterval(ghostInterval);
+	document.getElementById("paused").style.opacity = 1;
 	isPaused = true;
 }
 
 function resumeGame() {
-	if (!isGameOver) {
+	if (!isGameOver && isPaused) {
 		timerInterval = setInterval(myClock, 1000);
 		ghostInterval = setInterval(function () {generateRandomNum(tilemap, ghost1Coord, pacmanCoord);}, 250); 
+		document.getElementById("paused").style.opacity = 0;
 	}
+	document.getElementById("paused").style.opacity = 0;
 	isPaused = false;
+}
+
+function restartGame() {
+	if (pressedShift && pressedR) {
+		clearInterval(timerInterval);
+		clearInterval(ghostInterval);
+		location.reload();
+	} 
 }
 
 // Checks if all dots have been eaten

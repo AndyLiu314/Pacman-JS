@@ -12,6 +12,16 @@ body {
     color: aliceblue;
 }
 
+.paused{
+    position:absolute;
+    top:10px;
+    left: 146px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    font-size: 25px;
+    color: aliceblue;
+}
+
 .score-wrapper {
     position: absolute;
     top: 10px;
