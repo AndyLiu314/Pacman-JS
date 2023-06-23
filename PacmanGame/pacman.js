@@ -307,6 +307,11 @@ function moveGhost(tilemap, ghostCoord, ghostMove){
 
 	// add an if statement that checks if pacman coords are the same as ghost coords
 	// if so take away 500 points
+	if (ghostCoord[0] == pacmanCoord[0] && ghostCoord[1] == pacmanCoord[1]){
+		score -= 500;
+		document.getElementById("score").innerText = score.toString();	
+	}
+
 	// DO NOT RESET COORDINATES HERE (DONE IN RENDER MAP FUNC)
 
 	return ghostCoord;
@@ -353,10 +358,24 @@ function renderMap(tilemap) {
 	// add an if statement here that checks if pacman's coord is same as ghost
 	// if the coords are the same, then redraw the ghost again but with its position reset to the centre
 	// this will indicate the ghost has hit pacman and has reset
+	if (ghost1Coord[0] == pacmanCoord[0] && ghost1Coord[1] == pacmanCoord[1]){
+		ghost1Coord[0] = 4;
+		ghost1Coord[1] = 4;
+		translateGhost1 = translateObject(ghost1, ghost1Coord[0], ghost1Coord[1], 0.18, 0.162);
+		drawShape(gl.TRIANGLES, translateGhost1, 6, ghostColor[0]);	
+	}
 	
 	// do same thing here for other ghost
 	let translateGhost2 = translateObject(ghost2, ghost2Coord[0], ghost2Coord[1], 0.18, 0.162);
 	drawShape(gl.TRIANGLES, translateGhost2, 6, ghostColor[1]);
+
+	if (ghost2Coord[0] == pacmanCoord[0] && ghost2Coord[1] == pacmanCoord[1]){
+		ghost2Coord[0] = 5;
+		ghost2Coord[1] = 4;
+		translateGhost2 = translateObject(ghost1, ghost2Coord[0], ghost2Coord[1], 0.18, 0.162);
+		drawShape(gl.TRIANGLES, translateGhost2, 6, ghostColor[1]);	
+	}
+
 	ghostMove = 0;
 	ghostMove1 = 0; 
 }
