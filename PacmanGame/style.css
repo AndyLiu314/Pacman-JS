@@ -12,10 +12,51 @@ body {
     color: aliceblue;
 }
 
-.paused{
+.controls{
+    position:absolute;
+    top:410px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    color: aliceblue;
+}
+
+.gamestatusPause{
     position:absolute;
     top:10px;
-    left: 146px;
+    left: 145px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    font-size: 25px;
+    color: aliceblue;
+}
+
+.gamestatusDeath{
+    position:absolute;
+    top:165px;
+    left: 83px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 900;
+    font-size: 60px;
+    text-shadow: 0 0 4px black, 0 0 4px black, 0 0 4px black, 0 0 4px black; 
+    color: rgb(255, 1, 1);
+}
+
+.gamestatusVictory{
+    position:absolute;
+    top:165px;
+    left: 60px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 900;
+    font-size: 60px;
+    text-shadow: 0 0 4px black, 0 0 4px black, 0 0 4px black, 0 0 4px black; 
+    color: rgb(255, 251, 1);
+}
+
+.gamestatusHit{
+    position:absolute;
+    top:10px;
+    left: 144px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: 600;
     font-size: 25px;

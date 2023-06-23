@@ -449,10 +449,12 @@ function myClock() {
 }
 
 function pauseGame() {
-	clearInterval(timerInterval);
-	clearInterval(ghostInterval);
-	document.getElementById("paused").style.opacity = 1;
-	isPaused = true;
+	if (!isGameOver){
+		clearInterval(timerInterval);
+		clearInterval(ghostInterval);
+		document.getElementById("paused").style.opacity = 1;
+		isPaused = true;
+	}
 }
 
 function resumeGame() {
@@ -519,16 +521,19 @@ function render() {
 		if (isGameOver){
 			if (score > 0){ // Game has finished and Pacman has won
 				let finalscore = score + (time+1)*100;
+				document.getElementById("score").innerText = finalscore.toString();
+				document.getElementById("victory").style.opacity = 1;
 				let message = "Game Completed. Final Score: " + finalscore;
 				alert(message);
 				return;
-			} else { // Gane has finished and Pacman has died
+			} else { // Game has finished and Pacman has died
+				document.getElementById("death").style.opacity = 1;
 				let message = "Game Over, Pacman Has Died. Final Score: " + score;
 				alert(message);
 				return;
 			}
 		} else if (isHit) { // Notify player that they have been hit
-			let message = "HIT! Score - 500";
+			let message = "HIT! Score - 500. Get Ready To Move!";
 			alert(message);
 			document.getElementById("score").innerText = score.toString();	
 			isHit = false;
