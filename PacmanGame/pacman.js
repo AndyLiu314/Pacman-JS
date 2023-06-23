@@ -12,6 +12,7 @@ var timerInterval;
 var ghostInterval;
 var isGameOver = false;
 var isHit = false;
+var isInvincible = false;
 var pacmanCoord = [9,4]; // Coordinates are written in the form [Row, Column]
 var ghost1Coord = [4,4]; 
 var ghost2Coord = [5,4];
@@ -110,11 +111,11 @@ const wall = [
 	vec2(  -0.81, 0.648),
 ];
 
+const numSegments = 360;   // Number of segments for the circles
+
 // Create the vertex data for the circle
 const center = vec2(-0.72, 0.729); // Center of the circle
-const radius = 0.0245;            // Radius of the circle
-const numSegments = 360;       // Number of segments for the circle
-
+const radius = 0.0245;            // Radius of the circle    
 const foodDot = [];
 foodDot.push(center);
 for (let i = 0; i <= numSegments; i++) {
@@ -124,11 +125,23 @@ for (let i = 0; i <= numSegments; i++) {
     foodDot.push(vec2(x, y));
 }
 
+const superCenter = vec2(-0.72, 0.729); // Center of the circle
+const superRadius = 0.04;            // Radius of the circle
+const superDot = [];
+superDot.push(superCenter);
+for (let i = 0; i <= numSegments; i++) {
+    const theta = (i / numSegments) * 2.0 * Math.PI;
+    const x = superCenter[0] + superRadius * Math.cos(theta);
+    const y = superCenter[1] + superRadius * Math.sin(theta);
+    superDot.push(vec2(x, y));
+}
+
 const pathbufferColor = vec4(0.85, 0.85, 0.85, 1.0);
 const pacmanColor = vec4(0.0, 0.0, 1.0, 1.0);
 const wallColor = vec4(0.0, 0.6, 0.0, 1.0);
 const pacfoodColor = vec4(0.55, 0.55, 0.0, 1.0);
 const ghostColor = [vec4(0.85, 0.0, 0.0, 1.0), vec4(0.0, 0.85, 0.85, 1.0)]; 
+const superdotColor = vec4(0.75, 0.0, 0.75, 1.0);
 
 // 0 = wall
 // 1 = path
@@ -141,7 +154,7 @@ var tilemap = [
 	[3, 3, 3, 3, 3, 3, 3, 3, 3],
 	[3, 0, 0, 0, 3, 0, 0, 0, 3],
 	[3, 0, 0, 0, 3, 0, 0, 0, 3],
-	[3, 3, 3, 3, 3, 3, 3, 3, 3],
+	[3, 3, 3, 3, 6, 3, 3, 3, 3],
 	[3, 0, 3, 3, 4, 3, 3, 0, 3],
 	[3, 0, 3, 3, 4, 3, 3, 0, 3],
 	[3, 3, 3, 3, 3, 3, 3, 3, 3],
@@ -206,12 +219,14 @@ function movePacman(tilemap){
 
 	// up
 	if (pressed == 1){
-		if(row > 0 && (tilemap[row-1][col] ==  1 || tilemap[row-1][col] ==  3)){
+		if(row > 0 && (tilemap[row-1][col] ==  1 || tilemap[row-1][col] ==  3 || tilemap[row-1][col] ==  6)){
 			if (tilemap[row-1][col] ==  3){
 				score += 100;
 				//console.log(score);
 				document.getElementById("score").innerText =  score.toString();			
-			}			
+			} else if (tilemap[row-1][col] ==  6){
+				isInvincible = true;
+			}		
 			tilemap[row-1][col] = 2;
 			tilemap[row][col] = 1;
 			pacmanCoord[0] = row - 1;
@@ -219,12 +234,14 @@ function movePacman(tilemap){
 	}
 	// down
 	else if (pressed == 2){
-		if(row < 9 && (tilemap[row+1][col] ==  1 || tilemap[row+1][col] ==  3)){
+		if(row < 9 && (tilemap[row+1][col] ==  1 || tilemap[row+1][col] ==  3 || tilemap[row+1][col] ==  6)){
 			if (tilemap[row+1][col] ==  3){
 				score += 100;
 				//console.log(score);
 				document.getElementById("score").innerText = score.toString();
-			}			
+			} else if (tilemap[row+1][col] ==  6){
+				isInvincible = true;
+			}		
 			tilemap[row+1][col] = 2;
 			tilemap[row][col] = 1;
 			pacmanCoord[0] = row + 1;
@@ -232,12 +249,14 @@ function movePacman(tilemap){
 	}
 	// left
 	else if (pressed == 3){
-		if(col > 0 && (tilemap[row][col-1] ==  1 || tilemap[row][col-1] ==  3)){
+		if(col > 0 && (tilemap[row][col-1] ==  1 || tilemap[row][col-1] ==  3 || tilemap[row][col-1] ==  6)){
 			if (tilemap[row][col-1] ==  3){
 				score += 100;
 				//console.log(score);
 				document.getElementById("score").innerText = score.toString();				
-			}			
+			} else if (tilemap[row][col-1] ==  6){
+				isInvincible = true;
+			}		
 			tilemap[row][col-1] = 2;
 			tilemap[row][col] = 1;
 			pacmanCoord[1] = col - 1;
@@ -245,11 +264,13 @@ function movePacman(tilemap){
 	}
 	// right
 	else if (pressed == 4){
-		if(col < 8 && (tilemap[row][col+1] ==  1 || tilemap[row][col+1] ==  3)){
+		if(col < 8 && (tilemap[row][col+1] ==  1 || tilemap[row][col+1] ==  3 || tilemap[row][col+1] ==  6)){
 			if (tilemap[row][col+1] ==  3){
 				score += 100;
 				//console.log(score);
 				document.getElementById("score").innerText = score.toString();					
+			} else if (tilemap[row][col+1] ==  6){
+				isInvincible = true;
 			}
 			tilemap[row][col+1] = 2;
 			tilemap[row][col] = 1;
@@ -309,12 +330,16 @@ function moveGhost(tilemap, ghostCoord, ghostMove){
 	// add an if statement that checks if pacman coords are the same as ghost coords
 	// if so take away 500 points
 	if (ghostCoord[0] == pacmanCoord[0] && ghostCoord[1] == pacmanCoord[1]){
-		score -= 500;
-		isHit = true;
-		if (score <= 0){
-			score = 0;
-			document.getElementById("score").innerText = score.toString();
-			gameOver();
+		if (!isInvincible){
+			score -= 500;
+			isHit = true;
+			if (score <= 0){
+				score = 0;
+				document.getElementById("score").innerText = score.toString();
+				gameOver();
+			}
+		} else {
+			isInvincible = false;
 		}
 	}
 	return ghostCoord;
@@ -344,12 +369,21 @@ function renderMap(tilemap) {
 					pressed = 0;
 				}
 				let translatePacman = translateObject(pacman, row, column, 0.18, 0.162);
-				drawShape(gl.TRIANGLES, translatePacman, 3, pacmanColor);
+				if (isInvincible){
+					drawShape(gl.TRIANGLES, translatePacman, 3, superdotColor);
+				} else {
+					drawShape(gl.TRIANGLES, translatePacman, 3, pacmanColor);
+				}
 			}
 
 			else if (grid == 3){
 				let translateDot = translateObject(foodDot, row, column, 0.18, 0.162);
 				drawShape(gl.TRIANGLE_FAN, translateDot, numSegments + 2, pacfoodColor);
+			}
+
+			else if (grid == 6){
+				let translateSuperDot = translateObject(superDot, row, column, 0.18, 0.162);
+				drawShape(gl.TRIANGLE_FAN, translateSuperDot, numSegments + 2, superdotColor);
 			}
 		}
 	}
