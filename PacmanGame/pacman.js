@@ -1,4 +1,5 @@
-//import TileMap from "./tilemap";
+// SIMPLIFIED PACMAN USING WEBGL
+// Made By: Andy Liu
 
 // Global variables
 var canvas;
@@ -9,14 +10,14 @@ var pressed = 0;
 var score = 0;
 var time = 60;
 var timerInterval; 
-var ghostInterval;
+var ghostInterval; 
 var isGameOver = false;
 var isHit = false;
 var isInvincible = false;
-var pacmanCoord = [9,4]; // Coordinates are written in the form [Row, Column]
+var pacmanCoord = [9,4]; // Coordinates are written in the form [Row, Column], where row and column refer to the 2d array
 var ghost1Coord = [4,4]; 
 var ghost2Coord = [5,4];
-var ghostMove = 0;
+var ghostMove = 0; // Tracks movement of the ghosts
 var ghostMove1 = 0;
 
 // Getting the keyboard input
@@ -37,7 +38,9 @@ function getKey(key) {
 	}
 }
 
-// pacman movement frames
+// Vertex attributes of all objects within the program
+// Vertices are all defaulted to the top left of the screen
+// Vertices are then translated based on their position within the tilemap below
 var pacman = [
 	vec2(  -0.66,  0.67 ),
 	vec2( -0.72, 0.79 ),
@@ -113,7 +116,7 @@ const wall = [
 
 const numSegments = 360;   // Number of segments for the circles
 
-// Create the vertex data for the circle
+// Create the vertex data for the food dot
 const center = vec2(-0.72, 0.729); // Center of the circle
 const radius = 0.0245;            // Radius of the circle    
 const foodDot = [];
@@ -125,6 +128,7 @@ for (let i = 0; i <= numSegments; i++) {
     foodDot.push(vec2(x, y));
 }
 
+// Create vertex data for the super dot powerup
 const superCenter = vec2(-0.72, 0.729); // Center of the circle
 const superRadius = 0.04;            // Radius of the circle
 const superDot = [];
@@ -136,6 +140,7 @@ for (let i = 0; i <= numSegments; i++) {
     superDot.push(vec2(x, y));
 }
 
+// Colours for objects
 const pathbufferColor = vec4(0.85, 0.85, 0.85, 1.0);
 const pacmanColor = vec4(0.0, 0.0, 1.0, 1.0);
 const wallColor = vec4(0.0, 0.6, 0.0, 1.0);
@@ -149,7 +154,10 @@ const superdotColor = vec4(0.75, 0.0, 0.75, 1.0);
 // 3 = foodDot
 // 4 = center
 // 6 = superdot
-// might need special number just for middle 2 blocks (when ghosts leave the area is colored like path but blocked)
+// 2D array to store the location of each object being drawn
+// This way, simple and quick changes to the tilemap can lead to large changes in rendering
+// Ghosts are not rendered on the tilemap to simplify their movement
+// If they are rendered on the map, they risk affecting the dots
 var tilemap = [
 	[3, 3, 3, 3, 3, 3, 3, 3, 3],
 	[3, 0, 0, 0, 3, 0, 0, 0, 3],
@@ -164,7 +172,7 @@ var tilemap = [
 ];
 
 function drawShape(type, vertices, n, color) {
-	// creates and binds buffer to store vertex information
+	// Creates and binds buffer to store vertex information
 	var vBuffer = gl.createBuffer();
     if (!vBuffer) {
 		console.log('Failed to create the buffer object');
@@ -173,7 +181,7 @@ function drawShape(type, vertices, n, color) {
 	gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
 	gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW ); 
 
-	// associates shader variables with data buffer
+	// Associates shader variables with data buffer
 	var vPosition = gl.getAttribLocation( program, "vPosition" );
 	if (vPosition < 0) {
 		console.log('Failed to get the storage location of vPosition');
@@ -182,62 +190,55 @@ function drawShape(type, vertices, n, color) {
 	gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
 	gl.enableVertexAttribArray( vPosition );   
 
-	//get color location and then send
+	// Get color location and then send
 	var colorLoc = gl.getUniformLocation(program, "uColor");
 	gl.uniform4fv(colorLoc, color);
 
-	// draw
+	// Draw
 	gl.drawArrays(type, 0, n);
 }
 
+// Copy vertices into new array to prevent vertices form being modified
+// The coordinates of the default render always start at the top left corner of the map 
+// These coordinates are then translated based on their position in the 2d array tilemap
 function translateObject(vertices, row, column, amountX, amountY) {
 	const newVertices = [];
-	// copy vertices into new array to prevent vertices form being modified
-	// vertices is used as a default render of an object
-	// the coordinates of the default render always start at the top left corner of the map 
-	for (let i = 0; i < vertices.length; i++) {
+	for (let i = 0; i < vertices.length; i++) { // Copy vertices into new array
 		newVertices.push(vec2(vertices[i][0], vertices[i][1]));
 	}
 
-	// applies translation
-	for (let i = 0; i < newVertices.length; i++){
+	for (let i = 0; i < newVertices.length; i++){ // Applies translation
 		let vertex = newVertices[i];
 		newVertices[i] = vec2(vertex[0] + column*amountX, vertex[1] - row*amountY);
-		//debug = newVertices[i][0];
 	}
 	return newVertices;
 }
 
+// Check what key is pressed to determine direction
+// Check if the movement is allowed (key press is within bounds of tilemap)
+// Change tilemap[row][column] and move pacman ('2') to another grid/position
+// Change rendering position of other objects such as food dot or super dot if necessary
 function movePacman(tilemap){
-	// first find row and column of pacman
 	let row = pacmanCoord[0];
 	let col = pacmanCoord[1];
-
-	// then check what key is pressed to determine direction
-	// then check if the movement is allowed (key press is within bounds of tilemap)
-	// then change tilemap[row][column] and move pacman ('2') to another grid
-
-	// up
-	if (pressed == 1){
-		if(row > 0 && (tilemap[row-1][col] ==  1 || tilemap[row-1][col] ==  3 || tilemap[row-1][col] ==  6)){
-			if (tilemap[row-1][col] ==  3){
+	if (pressed == 1){ // Up
+		if(row > 0 && (tilemap[row-1][col] ==  1 || tilemap[row-1][col] ==  3 || tilemap[row-1][col] ==  6)){ // Check if movement is allowed in the tilemap
+			if (tilemap[row-1][col] ==  3){ // Pacman moved onto a dot
 				score += 100;
-				//console.log(score);
 				document.getElementById("score").innerText =  score.toString();			
-			} else if (tilemap[row-1][col] ==  6){
+			} else if (tilemap[row-1][col] ==  6){ // Pacman moved onto a super dot powerup
 				isInvincible = true;
 			}		
-			tilemap[row-1][col] = 2;
+			tilemap[row-1][col] = 2; // Elements of the tilemap are updated
 			tilemap[row][col] = 1;
-			pacmanCoord[0] = row - 1;
+			pacmanCoord[0] = row - 1; // Pacman's coordinates are updated
 		}
 	}
-	// down
-	else if (pressed == 2){
+
+	else if (pressed == 2){ // Down
 		if(row < 9 && (tilemap[row+1][col] ==  1 || tilemap[row+1][col] ==  3 || tilemap[row+1][col] ==  6)){
 			if (tilemap[row+1][col] ==  3){
-				score += 100;
-				//console.log(score);
+				score += 100; 
 				document.getElementById("score").innerText = score.toString();
 			} else if (tilemap[row+1][col] ==  6){
 				isInvincible = true;
@@ -247,12 +248,11 @@ function movePacman(tilemap){
 			pacmanCoord[0] = row + 1;
 		}
 	}
-	// left
-	else if (pressed == 3){
+	
+	else if (pressed == 3){ // Left
 		if(col > 0 && (tilemap[row][col-1] ==  1 || tilemap[row][col-1] ==  3 || tilemap[row][col-1] ==  6)){
 			if (tilemap[row][col-1] ==  3){
 				score += 100;
-				//console.log(score);
 				document.getElementById("score").innerText = score.toString();				
 			} else if (tilemap[row][col-1] ==  6){
 				isInvincible = true;
@@ -262,12 +262,11 @@ function movePacman(tilemap){
 			pacmanCoord[1] = col - 1;
 		}
 	}
-	// right
-	else if (pressed == 4){
+	
+	else if (pressed == 4){ // Right
 		if(col < 8 && (tilemap[row][col+1] ==  1 || tilemap[row][col+1] ==  3 || tilemap[row][col+1] ==  6)){
 			if (tilemap[row][col+1] ==  3){
 				score += 100;
-				//console.log(score);
 				document.getElementById("score").innerText = score.toString();					
 			} else if (tilemap[row][col+1] ==  6){
 				isInvincible = true;
@@ -289,46 +288,37 @@ function generateRandomNum(tilemap, ghost1Coord, pacmanCoord) {
 	//maybe make it so that ghosts dont run into walls
 }
 
+// Ghosts are not rendered on the map to simplify movement
+// Instead, their movements are stored as coordinates in arrays to be passed to renderMap()
 function moveGhost(tilemap, ghostCoord, ghostMove){
 	let row = ghostCoord[0];
 	let col = ghostCoord[1];
-	//console.log(ghostMove);
 
-	// up
-	if (ghostMove == 1){
+	if (ghostMove == 1){ // Up
 		if(row > 0 && (tilemap[row-1][col] != 0)){		
-			//tilemap[row-1][col] = ghostNum;
-			//tilemap[row][col] = 1;
 			ghostCoord[0] = row - 1;
 		}
-	}
-	// down
-	else if (ghostMove == 2){
+	}	
+
+	else if (ghostMove == 2){ // Down
 		if(row < 9 && (tilemap[row+1][col] != 0)){			
-			//tilemap[row+1][col] = 2;
-			//tilemap[row][col] = 1;
 			ghostCoord[0] = row + 1;
 		}
 	}
-	// left
-	else if (ghostMove == 3){
+
+	else if (ghostMove == 3){ // Left
 		if(col > 0 && (tilemap[row][col-1] != 0)){		
-			//tilemap[row][col-1] = 2;
-			//tilemap[row][col] = 1;
 			ghostCoord[1] = col - 1;
 		}
 	}
-	// right
-	else if (ghostMove == 4){
+	
+	else if (ghostMove == 4){ // Right
 		if(col < 8 && (tilemap[row][col+1] != 0)){
-			//tilemap[row][col+1] = 2;
-			//tilemap[row][col] = 1;
 			ghostCoord[1] = col + 1;
 		}
 	}
 
-	// add an if statement that checks if pacman coords are the same as ghost coords
-	// if so take away 500 points
+	// Removes score when Pacman is caught by ghosts
 	if (ghostCoord[0] == pacmanCoord[0] && ghostCoord[1] == pacmanCoord[1]){
 		if (!isInvincible){
 			score -= 500;
@@ -345,16 +335,18 @@ function moveGhost(tilemap, ghostCoord, ghostMove){
 	return ghostCoord;
 }
 
+// Loops through the tilemap and renders objects according to their position in the 2d array
+// Vertex attributes are translated from their default location in the upper left corner of the canvas
 function renderMap(tilemap) {
 	for (let row = 0; row < tilemap.length; row++){
 		for (let column = 0; column < tilemap[0].length; column++){
 			let grid = tilemap[row][column];
-			if (grid == 0){
+			if (grid == 0){ // Draw wall
 				let translateWall = translateObject(wall, row, column, 0.18, 0.162);
 				drawShape(gl.TRIANGLES, translateWall, 6, wallColor);
 			}
 
-			else if (grid == 2){
+			else if (grid == 2){ // Draw pacman
 				if (pressed == 1){
 					pacman = pacman_up;
 					pressed = 0;
@@ -369,41 +361,36 @@ function renderMap(tilemap) {
 					pressed = 0;
 				}
 				let translatePacman = translateObject(pacman, row, column, 0.18, 0.162);
-				if (isInvincible){
+				if (isInvincible){ // Render color differently based on powerup status
 					drawShape(gl.TRIANGLES, translatePacman, 3, superdotColor);
 				} else {
 					drawShape(gl.TRIANGLES, translatePacman, 3, pacmanColor);
 				}
 			}
 
-			else if (grid == 3){
+			else if (grid == 3){ // Draw dot
 				let translateDot = translateObject(foodDot, row, column, 0.18, 0.162);
 				drawShape(gl.TRIANGLE_FAN, translateDot, numSegments + 2, pacfoodColor);
 			}
 
-			else if (grid == 6){
+			else if (grid == 6){ // Draw super dot
 				let translateSuperDot = translateObject(superDot, row, column, 0.18, 0.162);
 				drawShape(gl.TRIANGLE_FAN, translateSuperDot, numSegments + 2, superdotColor);
 			}
 		}
 	}
 
-	// take ghost grid stuff out and replace with just mapping the global var ghost1coord 
-	// that way the ghost is rendered above everything so no need to worry about ghost movement changing map
+	// Draw ghosts
+	// Resets ghosts if it caught Pacman
 	let translateGhost1 = translateObject(ghost1, ghost1Coord[0], ghost1Coord[1], 0.18, 0.162);
 	drawShape(gl.TRIANGLES, translateGhost1, 6, ghostColor[0]);
-	// add an if statement here that checks if pacman's coord is same as ghost
-	// if the coords are the same, then redraw the ghost again but with its position reset to the centre
-	// this will indicate the ghost has hit pacman and has reset
 	if (ghost1Coord[0] == pacmanCoord[0] && ghost1Coord[1] == pacmanCoord[1] && !isGameOver){
 		ghost1Coord[0] = 4;
 		ghost1Coord[1] = 4;
 	}
 	
-	// do same thing here for other ghost
 	let translateGhost2 = translateObject(ghost2, ghost2Coord[0], ghost2Coord[1], 0.18, 0.162);
 	drawShape(gl.TRIANGLES, translateGhost2, 6, ghostColor[1]);
-
 	if (ghost2Coord[0] == pacmanCoord[0] && ghost2Coord[1] == pacmanCoord[1] && !isGameOver){
 		ghost2Coord[0] = 5;
 		ghost2Coord[1] = 4;	
@@ -413,6 +400,7 @@ function renderMap(tilemap) {
 	ghostMove1 = 0; 
 }
 
+// Clock function to track time
 function myClock() {
 	if (time >= 0) {
 		let second = time;
@@ -423,24 +411,22 @@ function myClock() {
 	}
 }
 
+// Checks if all dots have been eaten
 function dotsCleared(tilemap) {
 	for (let i = 0; i < tilemap.length; i++) {
 		for (let j = 0; j < tilemap[i].length; j++) {
 			if (tilemap[i][j] === 3) {
-				return; // 3's still exist, return false
+				return; // Dots still exist, exit function
 			}
 		}
 	}
-	gameOver();
-	return; // All 3's cleared, return true
+	gameOver(); // All dots cleared, call gameOver to end the game
+	return; 
 }
 
 function gameOver() {
-    // Perform game over actions
-    // For example: show a message, stop the game loop, etc.
-    clearInterval(timerInterval); // Stop the timer
+    clearInterval(timerInterval); // Stop the timers 
 	clearInterval(ghostInterval);
-    // Additional game over logic...
 	isGameOver = true;
 }
 
@@ -451,30 +437,35 @@ window.onload = function init() {
 	gl.viewport( 0, 0, canvas.width, canvas.height );
 	gl.clearColor( 0.5, 0.5, 0.5, 1.0 );
 
-    //  Load shaders and initialize attribute buffers
+    // Load shaders and initialize attribute buffers
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
 	gl.useProgram( program );
 
+	// Initialize clocks
 	timerInterval = setInterval(myClock, 1000);
-	ghostInterval = setInterval(generateRandomNum, 250);
+
+	// This clock determines how fast the ghosts move
+	// More numbers generated means more movement
+	ghostInterval = setInterval(generateRandomNum, 250); 
 	render();
 }
 
 function render() {
+	// Begins each render() call by checking if the game over conditions are met
 	dotsCleared(tilemap);
 	if (isHit || isGameOver){
 		if (isGameOver){
-			if (score > 0){
+			if (score > 0){ // Game has finished and Pacman has won
 				let finalscore = score + (time+1)*100;
 				let message = "Game Completed. Final Score: " + finalscore;
 				alert(message);
 				return;
-			} else {
+			} else { // Gane has finished and Pacman has died
 				let message = "Game Over, Pacman Has Died. Final Score: " + score;
 				alert(message);
 				return;
 			}
-		} else if (isHit) {
+		} else if (isHit) { // Notify player that they have been hit
 			let message = "HIT! Score - 500";
 			alert(message);
 			document.getElementById("score").innerText = score.toString();	
