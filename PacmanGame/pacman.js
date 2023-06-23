@@ -11,6 +11,7 @@ var time = 60;
 var timerInterval; 
 var ghostInterval;
 var isGameOver = false;
+var isHit = false;
 var pacmanCoord = [9,4]; // Coordinates are written in the form [Row, Column]
 var ghost1Coord = [4,4]; 
 var ghost2Coord = [5,4];
@@ -309,7 +310,7 @@ function moveGhost(tilemap, ghostCoord, ghostMove){
 	// if so take away 500 points
 	if (ghostCoord[0] == pacmanCoord[0] && ghostCoord[1] == pacmanCoord[1]){
 		score -= 500;
-		document.getElementById("score").innerText = score.toString();	
+		isHit = true;
 		if (score <= 0){
 			score = 0;
 			document.getElementById("score").innerText = score.toString();
@@ -363,8 +364,6 @@ function renderMap(tilemap) {
 	if (ghost1Coord[0] == pacmanCoord[0] && ghost1Coord[1] == pacmanCoord[1] && !isGameOver){
 		ghost1Coord[0] = 4;
 		ghost1Coord[1] = 4;
-		translateGhost1 = translateObject(ghost1, ghost1Coord[0], ghost1Coord[1], 0.18, 0.162);
-		drawShape(gl.TRIANGLES, translateGhost1, 6, ghostColor[0]);	
 	}
 	
 	// do same thing here for other ghost
@@ -373,9 +372,7 @@ function renderMap(tilemap) {
 
 	if (ghost2Coord[0] == pacmanCoord[0] && ghost2Coord[1] == pacmanCoord[1] && !isGameOver){
 		ghost2Coord[0] = 5;
-		ghost2Coord[1] = 4;
-		translateGhost2 = translateObject(ghost1, ghost2Coord[0], ghost2Coord[1], 0.18, 0.162);
-		drawShape(gl.TRIANGLES, translateGhost2, 6, ghostColor[1]);	
+		ghost2Coord[1] = 4;	
 	}
 
 	ghostMove = 0;
@@ -431,16 +428,23 @@ window.onload = function init() {
 
 function render() {
 	dotsCleared(tilemap);
-	if (isGameOver){
-		if (score > 0){
-			let finalscore = score + (time+1)*100;
-			let message = "Game Over. Final Score: " + finalscore;
+	if (isHit || isGameOver){
+		if (isGameOver){
+			if (score > 0){
+				let finalscore = score + (time+1)*100;
+				let message = "Game Completed. Final Score: " + finalscore;
+				alert(message);
+				return;
+			} else {
+				let message = "Game Over, Pacman Has Died. Final Score: " + score;
+				alert(message);
+				return;
+			}
+		} else if (isHit) {
+			let message = "HIT! Score - 500";
 			alert(message);
-			return;
-		} else {
-			let message = "Game Over. Final Score: " + score;
-			alert(message);
-			return;
+			document.getElementById("score").innerText = score.toString();	
+			isHit = false;
 		}
 	}
 
