@@ -310,10 +310,12 @@ function moveGhost(tilemap, ghostCoord, ghostMove){
 	if (ghostCoord[0] == pacmanCoord[0] && ghostCoord[1] == pacmanCoord[1]){
 		score -= 500;
 		document.getElementById("score").innerText = score.toString();	
+		if (score <= 0){
+			score = 0;
+			document.getElementById("score").innerText = score.toString();
+			gameOver();
+		}
 	}
-
-	// DO NOT RESET COORDINATES HERE (DONE IN RENDER MAP FUNC)
-
 	return ghostCoord;
 }
 
@@ -358,7 +360,7 @@ function renderMap(tilemap) {
 	// add an if statement here that checks if pacman's coord is same as ghost
 	// if the coords are the same, then redraw the ghost again but with its position reset to the centre
 	// this will indicate the ghost has hit pacman and has reset
-	if (ghost1Coord[0] == pacmanCoord[0] && ghost1Coord[1] == pacmanCoord[1]){
+	if (ghost1Coord[0] == pacmanCoord[0] && ghost1Coord[1] == pacmanCoord[1] && !isGameOver){
 		ghost1Coord[0] = 4;
 		ghost1Coord[1] = 4;
 		translateGhost1 = translateObject(ghost1, ghost1Coord[0], ghost1Coord[1], 0.18, 0.162);
@@ -369,7 +371,7 @@ function renderMap(tilemap) {
 	let translateGhost2 = translateObject(ghost2, ghost2Coord[0], ghost2Coord[1], 0.18, 0.162);
 	drawShape(gl.TRIANGLES, translateGhost2, 6, ghostColor[1]);
 
-	if (ghost2Coord[0] == pacmanCoord[0] && ghost2Coord[1] == pacmanCoord[1]){
+	if (ghost2Coord[0] == pacmanCoord[0] && ghost2Coord[1] == pacmanCoord[1] && !isGameOver){
 		ghost2Coord[0] = 5;
 		ghost2Coord[1] = 4;
 		translateGhost2 = translateObject(ghost1, ghost2Coord[0], ghost2Coord[1], 0.18, 0.162);
@@ -392,15 +394,15 @@ function myClock() {
 
 function dotsCleared(tilemap) {
 	for (let i = 0; i < tilemap.length; i++) {
-	  for (let j = 0; j < tilemap[i].length; j++) {
-		if (tilemap[i][j] === 3) {
-		  return; // 3's still exist, return false
+		for (let j = 0; j < tilemap[i].length; j++) {
+			if (tilemap[i][j] === 3) {
+				return; // 3's still exist, return false
+			}
 		}
-	  }
 	}
 	gameOver();
 	return; // All 3's cleared, return true
-  }
+}
 
 function gameOver() {
     // Perform game over actions
@@ -430,10 +432,16 @@ window.onload = function init() {
 function render() {
 	dotsCleared(tilemap);
 	if (isGameOver){
-		let finalscore = score + (time+1)*100;
-		let message = "Game Over. Final Score: " + finalscore;
-		alert(message);
-		return;
+		if (score > 0){
+			let finalscore = score + (time+1)*100;
+			let message = "Game Over. Final Score: " + finalscore;
+			alert(message);
+			return;
+		} else {
+			let message = "Game Over. Final Score: " + score;
+			alert(message);
+			return;
+		}
 	}
 
 	gl.clear( gl.COLOR_BUFFER_BIT ); 
