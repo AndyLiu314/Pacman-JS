@@ -14,6 +14,7 @@ var ghostInterval;
 var isGameOver = false;
 var isHit = false;
 var isInvincible = false;
+var isPaused = false; 
 var pacmanCoord = [9,4]; // Coordinates are written in the form [Row, Column], where row and column refer to the 2d array
 var ghost1Coord = [4,4]; 
 var ghost2Coord = [5,4];
@@ -23,18 +24,22 @@ var ghostMove1 = 0;
 // Getting the keyboard input
 window.addEventListener("keydown", getKey, false);
 function getKey(key) {
-	if (key.key == "ArrowUp"){
+	if (key.key == "ArrowUp" && !isPaused){
 		//alert("key Up");
 		pressed = 1;
-	} else if (key.key == "ArrowDown"){
+	} else if (key.key == "ArrowDown" && !isPaused){
 		//alert("key Down");
 		pressed = 2;
-	} else if (key.key == "ArrowLeft"){
+	} else if (key.key == "ArrowLeft" && !isPaused){
 		//alert("key Left");
 		pressed = 3;
-	} else if (key.key == "ArrowRight"){
+	} else if (key.key == "ArrowRight" && !isPaused){
 		//alert("key Right");
 		pressed = 4;
+	} else if (key.key == "p") {
+		pauseGame();
+	} else if (key.key == "r") {
+		resumeGame();
 	}
 }
 
@@ -280,6 +285,20 @@ function movePacman(tilemap){
 }
 
 function generateRandomNum(tilemap, ghost1Coord, pacmanCoord) {
+	let row = ghost1Coord[0];
+	let col = ghost1Coord[1];
+
+	const validDirection = [];
+	if (row > 0 && (tilemap[row-1][col] != 0)){ // Up
+		validDirection.push(1);
+	} else if (row < 9 && (tilemap[row+1][col] != 0)) { //Down
+		validDirection.push(2);
+	} else if (col > 0 && (tilemap[row][col-1] != 0)) { // Left
+		validDirection.push(3);
+	} else if (col < 8 && (tilemap[row][col+1] != 0)) { // Right
+		validDirection.push(4);
+	}
+
 	let num1 = Math.floor(Math.random()*4 + 1); // random number from 1 to 4
 	ghostMove = num1;
 
@@ -411,6 +430,20 @@ function myClock() {
 	}
 }
 
+function pauseGame() {
+	clearInterval(timerInterval);
+	clearInterval(ghostInterval);
+	isPaused = true;
+}
+
+function resumeGame() {
+	if (!isGameOver) {
+		timerInterval = setInterval(myClock, 1000);
+		ghostInterval = setInterval(function () {generateRandomNum(tilemap, ghost1Coord, pacmanCoord);}, 250); 
+	}
+	isPaused = false;
+}
+
 // Checks if all dots have been eaten
 function dotsCleared(tilemap) {
 	for (let i = 0; i < tilemap.length; i++) {
@@ -446,7 +479,7 @@ window.onload = function init() {
 
 	// This clock determines how fast the ghosts move
 	// More numbers generated means more movement
-	ghostInterval = setInterval(generateRandomNum, 250); 
+	ghostInterval = setInterval(function () {generateRandomNum(tilemap, ghost1Coord, pacmanCoord);}, 250); 
 	render();
 }
 
