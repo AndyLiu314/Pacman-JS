@@ -24,7 +24,7 @@ the dot placement around the map. Global arrays stored the coordinates of moving
 their coordinates would be checked and if they matched, 1000 points would be deducted. The ghosts would then be reset 
 and have a delayed movement timer of 1 second to prevent them from constantly catching you if you are close to the center. 
 The increase of point deduction from 500 to 1000 is to give the player less room for error. Ghosts also move at a pace of 
-1 unit per 300 ms.
+1 unit per 250 ms.
 
 **Ghost Pathfinding AI:** 
 The ghosts are named Robert (pronouced Row-bert) and Colin (pronouced how you would expect). They are named like so because 

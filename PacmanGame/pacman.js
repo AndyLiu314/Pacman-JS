@@ -315,7 +315,7 @@ function RowPathfinding(tilemap, ghostCoord, pacmanCoord) {
 	if (Math.abs(rowDiff) > 0){ // If Pacman is any distance away vertically
 		if (rowDiff > 0){ // If Pacman below 
 			if (g_row < 9 && (tilemap[g_row+1][g_col] != 0)) { // If there are no obstacles
-				robertMove = ranNum < 80 ? 2 : 1;
+				robertMove = ranNum < 85 ? 2 : 1;
 			} else { // If unable to move vertically, go horizontally
 				if (colDiff >= 0){ 
 					robertMove = ranNum < 70 ? 4 : 3;
@@ -326,7 +326,7 @@ function RowPathfinding(tilemap, ghostCoord, pacmanCoord) {
 
 		} else { // If Pacman above
 			if (g_row > 0 && (tilemap[g_row-1][g_col] != 0)) {
-				robertMove = ranNum < 80 ? 1 : 2;
+				robertMove = ranNum < 85 ? 1 : 2;
 			} else { // If unable to move vertically, go horizontally
 				if (colDiff >= 0){
 					robertMove = ranNum < 70 ? 4 : 3;
@@ -365,7 +365,7 @@ function ColumnPathfinding(tilemap, ghostCoord, pacmanCoord){
 	if (Math.abs(colDiff) > 0){ // If Pacman is any distance away horizontally
 		if (colDiff > 0){ // If Pacman right
 			if (g_col < 8 && (tilemap[g_row][g_col+1] != 0)) { // If there are no obstacles
-				colinMove = ranNum < 80 ? 4 : 3;
+				colinMove = ranNum < 85 ? 4 : 3;
 			} else { // If unable to move horizontally, go vertically
 				if (rowDiff >= 0){ 
 					colinMove = ranNum < 70 ? 2 : 1;
@@ -376,7 +376,7 @@ function ColumnPathfinding(tilemap, ghostCoord, pacmanCoord){
 
 		} else { // If Pacman left
 			if (g_col > 0 && (tilemap[g_row][g_col-1] != 0)) { // If there are no obstacles
-				colinMove = ranNum < 80 ? 3 : 4;
+				colinMove = ranNum < 85 ? 3 : 4;
 			} else { // If unable to move horizontally, go vertically
 				if (rowDiff >= 0){
 					colinMove = ranNum < 70 ? 2 : 1;
@@ -543,8 +543,8 @@ function pauseGame() {
 function resumeGame() {
 	if (!isGameOver && isPaused) {
 		timerInterval = setInterval(myClock, 1000);
-		robertInterval = setInterval(function () {RowPathfinding(tilemap, robertCoord, pacmanCoord);}, 300); 
-		colinInterval = setInterval(function () {ColumnPathfinding(tilemap, colinCoord, pacmanCoord);}, 300);
+		robertInterval = setInterval(function () {RowPathfinding(tilemap, robertCoord, pacmanCoord);}, 250); 
+		colinInterval = setInterval(function () {ColumnPathfinding(tilemap, colinCoord, pacmanCoord);}, 250);
 		document.getElementById("paused").style.opacity = 0;
 	}
 	document.getElementById("paused").style.opacity = 0;
@@ -581,11 +581,11 @@ function gameOver() {
 }
 
 function resumeRobert(){
-	robertInterval = setInterval(function () {RowPathfinding(tilemap, robertCoord, pacmanCoord);}, 300);
+	robertInterval = setInterval(function () {RowPathfinding(tilemap, robertCoord, pacmanCoord);}, 250);
 }
 
 function resumeColin(){
-	colinInterval = setInterval(function () {ColumnPathfinding(tilemap, colinCoord, pacmanCoord);}, 300);
+	colinInterval = setInterval(function () {ColumnPathfinding(tilemap, colinCoord, pacmanCoord);}, 250);
 }
 
 window.onload = function init() {
@@ -604,8 +604,8 @@ window.onload = function init() {
 
 	// This clock determines how fast the ghosts move
 	// More numbers generated means more movement
-	robertInterval = setInterval(function () {RowPathfinding(tilemap, robertCoord, pacmanCoord);}, 300); 
-	colinInterval = setInterval(function () {ColumnPathfinding(tilemap, colinCoord, pacmanCoord);}, 300);
+	robertInterval = setInterval(function () {RowPathfinding(tilemap, robertCoord, pacmanCoord);}, 250); 
+	colinInterval = setInterval(function () {ColumnPathfinding(tilemap, colinCoord, pacmanCoord);}, 250);
 	render();
 }
 
