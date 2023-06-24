@@ -10,8 +10,8 @@ var pressed = 0;
 var score = 0;
 var time = 60;
 var timerInterval; 
-var ghostInterval; 
-var ghost1Interval;
+var robertInterval; 
+var colinInterval;
 var isGameOver = false;
 var isHit = false;
 var isInvincible = false;
@@ -507,8 +507,8 @@ function myClock() {
 function pauseGame() {
 	if (!isGameOver){
 		clearInterval(timerInterval);
-		clearInterval(ghostInterval);
-		clearInterval(ghost1Interval);
+		clearInterval(robertInterval);
+		clearInterval(colinInterval);
 		document.getElementById("paused").style.opacity = 1;
 		isPaused = true;
 	}
@@ -517,8 +517,8 @@ function pauseGame() {
 function resumeGame() {
 	if (!isGameOver && isPaused) {
 		timerInterval = setInterval(myClock, 1000);
-		ghostInterval = setInterval(function () {generateRandomNum(tilemap, ghost1Coord, pacmanCoord);}, 250); 
-		ghost1Interval = setInterval(function () {generateRandomNum1(tilemap, ghost2Coord, pacmanCoord);}, 250);
+		robertInterval = setInterval(function () {generateRandomNum(tilemap, ghost1Coord, pacmanCoord);}, 250); 
+		colinInterval = setInterval(function () {generateRandomNum1(tilemap, ghost2Coord, pacmanCoord);}, 250);
 		document.getElementById("paused").style.opacity = 0;
 	}
 	document.getElementById("paused").style.opacity = 0;
@@ -528,8 +528,8 @@ function resumeGame() {
 function restartGame() {
 	if (pressedShift && pressedR) {
 		clearInterval(timerInterval);
-		clearInterval(ghostInterval);
-		clearInterval(ghost1Interval);
+		clearInterval(robertInterval);
+		clearInterval(colinInterval);
 		location.reload();
 	} 
 }
@@ -549,8 +549,8 @@ function dotsCleared(tilemap) {
 
 function gameOver() {
     clearInterval(timerInterval); // Stop the timers 
-	clearInterval(ghostInterval);
-	clearInterval(ghost1Interval);
+	clearInterval(robertInterval);
+	clearInterval(colinInterval);
 	isGameOver = true;
 }
 
@@ -570,8 +570,8 @@ window.onload = function init() {
 
 	// This clock determines how fast the ghosts move
 	// More numbers generated means more movement
-	ghostInterval = setInterval(function () {generateRandomNum(tilemap, ghost1Coord, pacmanCoord);}, 250); 
-	ghost1Interval = setInterval(function () {generateRandomNum1(tilemap, ghost2Coord, pacmanCoord);}, 250);
+	robertInterval = setInterval(function () {generateRandomNum(tilemap, ghost1Coord, pacmanCoord);}, 250); 
+	colinInterval = setInterval(function () {generateRandomNum1(tilemap, ghost2Coord, pacmanCoord);}, 250);
 	render();
 }
 
