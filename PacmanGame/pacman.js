@@ -21,8 +21,8 @@ var pressedR = false;
 var pacmanCoord = [9,4]; // Coordinates are written in the form [Row, Column], where row and column refer to the 2d array
 var robertCoord = [4,4]; 
 var colinCoord = [5,4];
-var ghostMove = 0; // Tracks movement of the ghosts
-var ghostMove1 = 0;
+var robertMove = 0; // Tracks movement of the ghosts
+var colinMove = 0;
 
 // Getting the keyboard input
 var keyPressed = {};
@@ -102,7 +102,7 @@ const pacman_down = [
 	vec2(  -0.78, 0.78 )    
 ];
 
-const ghost1 = [
+const robert = [
 	vec2( -0.76, 0.77),
 	vec2(  -0.67, 0.77),
 	vec2(  -0.67, 0.688),
@@ -111,7 +111,7 @@ const ghost1 = [
 	vec2(  -0.76, 0.688),
 ];
 
-const ghost2 = [
+const colin = [
 	vec2( -0.76, 0.77),
 	vec2(  -0.67, 0.77),
 	vec2(  -0.67, 0.688),
@@ -303,7 +303,7 @@ function movePacman(tilemap){
 	return tilemap;
 }
 
-function generateRandomNum(tilemap, ghostCoord, pacmanCoord) {
+function RowPathfinding(tilemap, ghostCoord, pacmanCoord) {
 	let g_row = ghostCoord[0];
 	let g_col = ghostCoord[1];
 	let p_row = pacmanCoord[0];
@@ -315,34 +315,34 @@ function generateRandomNum(tilemap, ghostCoord, pacmanCoord) {
 	if (Math.abs(rowDiff) >= Math.abs(colDiff)){ // If Pacman is a greater distance away vertically
 		if (rowDiff > 0){ // If Pacman below 
 			if (g_row < 9 && tilemap[g_row+1][g_col] != 0) { // If there are no obstacles
-				ghostMove = ranNum < 75 ? 2 : 1;
+				robertMove = ranNum < 75 ? 2 : 1;
 			} else { // If unable to move vertically, go horizontally
 				if (colDiff >= 0){ 
-					ghostMove = ranNum < 60 ? 4 : 3;
+					robertMove = ranNum < 60 ? 4 : 3;
 				} else {
-					ghostMove = ranNum < 60 ? 3 : 4;
+					robertMove = ranNum < 60 ? 3 : 4;
 				}
 			}
 
 		} else { // If Pacman above
 			if (g_row > 0 && (tilemap[g_row-1][g_col] != 0)) {
-				ghostMove = ranNum < 75 ? 1 : 2;
+				robertMove = ranNum < 75 ? 1 : 2;
 			} else { // If unable to move vertically, go horizontally
 				if (colDiff >= 0){
-					ghostMove = ranNum < 60 ? 4 : 3;
+					robertMove = ranNum < 60 ? 4 : 3;
 				} else {
-					ghostMove = ranNum < 60 ? 3 : 4;
+					robertMove = ranNum < 60 ? 3 : 4;
 				}
 			}
 		}
 
 	} else { // maybe add so that if ghost is greater horizontally then he is inclined to go horizontally but not always
-		ghostMove = Math.floor(Math.random()*4 + 1);
+		robertMove = Math.floor(Math.random()*4 + 1);
 	}
-	console.log(ghostMove);
+	//console.log(robertMove);
 }
 
-function generateRandomNum1(tilemap, ghostCoord, pacmanCoord){
+function ColumnPathfinding(tilemap, ghostCoord, pacmanCoord){
 	let g_row = ghostCoord[0];
 	let g_col = ghostCoord[1];
 	let p_row = pacmanCoord[0];
@@ -354,31 +354,31 @@ function generateRandomNum1(tilemap, ghostCoord, pacmanCoord){
 	if (Math.abs(colDiff) >= Math.abs(rowDiff)){ // If Pacman is a greater distance away horizontally
 		if (colDiff > 0){ // If Pacman right
 			if (g_col < 8 && (tilemap[g_row][g_col+1] != 0)) { // If there are no obstacles
-				ghostMove1 = ranNum < 75 ? 4 : 3;
+				colinMove = ranNum < 75 ? 4 : 3;
 			} else { // If unable to move horizontally, go vertically
 				if (rowDiff >= 0){ 
-					ghostMove1 = ranNum < 60 ? 2 : 1;
+					colinMove = ranNum < 60 ? 2 : 1;
 				} else {
-					ghostMove1 = ranNum < 60 ? 1 : 2;
+					colinMove = ranNum < 60 ? 1 : 2;
 				}
 			}
 
 		} else { // If Pacman left
 			if (g_col > 0 && (tilemap[g_row][g_col-1] != 0)) { // If there are no obstacles
-				ghostMove1 = ranNum < 75 ? 3 : 4;
+				colinMove = ranNum < 75 ? 3 : 4;
 			} else { // If unable to move horizontally, go vertically
 				if (rowDiff >= 0){
-					ghostMove1 = ranNum < 60 ? 2 : 1;
+					colinMove = ranNum < 60 ? 2 : 1;
 				} else {
-					ghostMove1 = ranNum < 60 ? 1 : 2;
+					colinMove = ranNum < 60 ? 1 : 2;
 				}
 			}
 		}
 
 	} else { // maybe add so that if ghost is greater horizontally then he is inclined to go horizontally but not always
-		ghostMove1 = Math.floor(Math.random()*4 + 1);
+		colinMove = Math.floor(Math.random()*4 + 1);
 	}
-	console.log(ghostMove1);
+	//console.log(colinMove);
 }
 
 // Ghosts are not rendered on the map to simplify movement
@@ -475,22 +475,22 @@ function renderMap(tilemap) {
 
 	// Draw ghosts
 	// Resets ghosts if it caught Pacman
-	let translateGhost1 = translateObject(ghost1, robertCoord[0], robertCoord[1], 0.18, 0.162);
-	drawShape(gl.TRIANGLES, translateGhost1, 6, ghostColor[0]);
+	let translateRobert = translateObject(robert, robertCoord[0], robertCoord[1], 0.18, 0.162);
+	drawShape(gl.TRIANGLES, translateRobert, 6, ghostColor[0]);
 	if (robertCoord[0] == pacmanCoord[0] && robertCoord[1] == pacmanCoord[1] && !isGameOver){
 		robertCoord[0] = 4;
 		robertCoord[1] = 4;
 	}
 	
-	let translateGhost2 = translateObject(ghost2, colinCoord[0], colinCoord[1], 0.18, 0.162);
-	drawShape(gl.TRIANGLES, translateGhost2, 6, ghostColor[1]);
+	let translateColin = translateObject(colin, colinCoord[0], colinCoord[1], 0.18, 0.162);
+	drawShape(gl.TRIANGLES, translateColin, 6, ghostColor[1]);
 	if (colinCoord[0] == pacmanCoord[0] && colinCoord[1] == pacmanCoord[1] && !isGameOver){
 		colinCoord[0] = 5;
 		colinCoord[1] = 4;	
 	}
 
-	ghostMove = 0;
-	ghostMove1 = 0; 
+	robertMove = 0;
+	colinMove = 0; 
 }
 
 // Clock function to track time
@@ -517,8 +517,8 @@ function pauseGame() {
 function resumeGame() {
 	if (!isGameOver && isPaused) {
 		timerInterval = setInterval(myClock, 1000);
-		robertInterval = setInterval(function () {generateRandomNum(tilemap, robertCoord, pacmanCoord);}, 250); 
-		colinInterval = setInterval(function () {generateRandomNum1(tilemap, colinCoord, pacmanCoord);}, 250);
+		robertInterval = setInterval(function () {RowPathfinding(tilemap, robertCoord, pacmanCoord);}, 250); 
+		colinInterval = setInterval(function () {ColumnPathfinding(tilemap, colinCoord, pacmanCoord);}, 250);
 		document.getElementById("paused").style.opacity = 0;
 	}
 	document.getElementById("paused").style.opacity = 0;
@@ -570,8 +570,8 @@ window.onload = function init() {
 
 	// This clock determines how fast the ghosts move
 	// More numbers generated means more movement
-	robertInterval = setInterval(function () {generateRandomNum(tilemap, robertCoord, pacmanCoord);}, 250); 
-	colinInterval = setInterval(function () {generateRandomNum1(tilemap, colinCoord, pacmanCoord);}, 250);
+	robertInterval = setInterval(function () {RowPathfinding(tilemap, robertCoord, pacmanCoord);}, 250); 
+	colinInterval = setInterval(function () {ColumnPathfinding(tilemap, colinCoord, pacmanCoord);}, 250);
 	render();
 }
 
@@ -604,8 +604,8 @@ function render() {
 	gl.clear( gl.COLOR_BUFFER_BIT ); 
 	drawShape(gl.TRIANGLES, pathBuffer, 6, pathbufferColor);
 	tilemap = movePacman(tilemap);
-	robertCoord = moveGhost(tilemap, robertCoord, ghostMove);
-	colinCoord = moveGhost(tilemap, colinCoord, ghostMove1);
+	robertCoord = moveGhost(tilemap, robertCoord, robertMove);
+	colinCoord = moveGhost(tilemap, colinCoord, colinMove);
 	renderMap(tilemap);
 	window.requestAnimFrame(render);
 }
