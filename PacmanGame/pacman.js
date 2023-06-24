@@ -11,6 +11,7 @@ var score = 0;
 var time = 60;
 var timerInterval; 
 var ghostInterval; 
+var ghost1Interval;
 var isGameOver = false;
 var isHit = false;
 var isInvincible = false;
@@ -302,27 +303,82 @@ function movePacman(tilemap){
 	return tilemap;
 }
 
-function generateRandomNum(tilemap, ghost1Coord, pacmanCoord) {
-	let row = ghost1Coord[0];
-	let col = ghost1Coord[1];
+function generateRandomNum(tilemap, ghostCoord, pacmanCoord) {
+	let g_row = ghostCoord[0];
+	let g_col = ghostCoord[1];
+	let p_row = pacmanCoord[0];
+	let p_col = pacmanCoord[1];
+	const rowDiff = p_row - g_row;
+	const colDiff = p_col - g_col;
+	let ranNum = Math.floor(Math.random()*100);
 
-	const validDirection = [];
-	if (row > 0 && (tilemap[row-1][col] != 0)){ // Up
-		validDirection.push(1);
-	} else if (row < 9 && (tilemap[row+1][col] != 0)) { //Down
-		validDirection.push(2);
-	} else if (col > 0 && (tilemap[row][col-1] != 0)) { // Left
-		validDirection.push(3);
-	} else if (col < 8 && (tilemap[row][col+1] != 0)) { // Right
-		validDirection.push(4);
+	if (Math.abs(rowDiff) >= Math.abs(colDiff)){ // If Pacman is a greater distance away vertically
+		if (rowDiff > 0){ // If Pacman below 
+			if (g_row < 9 && tilemap[g_row+1][g_col] != 0) { // If there are no obstacles
+				ghostMove = ranNum < 75 ? 2 : 1;
+			} else { // If unable to move vertically, go horizontally
+				if (colDiff >= 0){ 
+					ghostMove = ranNum < 60 ? 4 : 3;
+				} else {
+					ghostMove = ranNum < 60 ? 3 : 4;
+				}
+			}
+
+		} else { // If Pacman above
+			if (g_row > 0 && (tilemap[g_row-1][g_col] != 0)) {
+				ghostMove = ranNum < 75 ? 1 : 2;
+			} else { // If unable to move vertically, go horizontally
+				if (colDiff >= 0){
+					ghostMove = ranNum < 60 ? 4 : 3;
+				} else {
+					ghostMove = ranNum < 60 ? 3 : 4;
+				}
+			}
+		}
+
+	} else { // maybe add so that if ghost is greater horizontally then he is inclined to go horizontally but not always
+		ghostMove = Math.floor(Math.random()*4 + 1);
 	}
+	console.log(ghostMove);
+}
 
-	let num1 = Math.floor(Math.random()*4 + 1); // random number from 1 to 4
-	ghostMove = num1;
+function generateRandomNum1(tilemap, ghostCoord, pacmanCoord){
+	let g_row = ghostCoord[0];
+	let g_col = ghostCoord[1];
+	let p_row = pacmanCoord[0];
+	let p_col = pacmanCoord[1];
+	const rowDiff = p_row - g_row;
+	const colDiff = p_col - g_col;
+	let ranNum = Math.floor(Math.random()*100);
 
-	let num2 = Math.floor(Math.random()*4 + 1); // random number from 1 to 4
-	ghostMove1 = num2;
-	//maybe make it so that ghosts dont run into walls
+	if (Math.abs(colDiff) >= Math.abs(rowDiff)){ // If Pacman is a greater distance away horizontally
+		if (colDiff > 0){ // If Pacman right
+			if (g_col < 8 && (tilemap[g_row][g_col+1] != 0)) { // If there are no obstacles
+				ghostMove1 = ranNum < 75 ? 4 : 3;
+			} else { // If unable to move horizontally, go vertically
+				if (rowDiff >= 0){ 
+					ghostMove1 = ranNum < 60 ? 2 : 1;
+				} else {
+					ghostMove1 = ranNum < 60 ? 1 : 2;
+				}
+			}
+
+		} else { // If Pacman left
+			if (g_col > 0 && (tilemap[g_row][g_col-1] != 0)) { // If there are no obstacles
+				ghostMove1 = ranNum < 75 ? 3 : 4;
+			} else { // If unable to move horizontally, go vertically
+				if (rowDiff >= 0){
+					ghostMove1 = ranNum < 60 ? 2 : 1;
+				} else {
+					ghostMove1 = ranNum < 60 ? 1 : 2;
+				}
+			}
+		}
+
+	} else { // maybe add so that if ghost is greater horizontally then he is inclined to go horizontally but not always
+		ghostMove1 = Math.floor(Math.random()*4 + 1);
+	}
+	console.log(ghostMove1);
 }
 
 // Ghosts are not rendered on the map to simplify movement
@@ -452,6 +508,7 @@ function pauseGame() {
 	if (!isGameOver){
 		clearInterval(timerInterval);
 		clearInterval(ghostInterval);
+		clearInterval(ghost1Interval);
 		document.getElementById("paused").style.opacity = 1;
 		isPaused = true;
 	}
@@ -461,6 +518,7 @@ function resumeGame() {
 	if (!isGameOver && isPaused) {
 		timerInterval = setInterval(myClock, 1000);
 		ghostInterval = setInterval(function () {generateRandomNum(tilemap, ghost1Coord, pacmanCoord);}, 250); 
+		ghost1Interval = setInterval(function () {generateRandomNum1(tilemap, ghost2Coord, pacmanCoord);}, 250);
 		document.getElementById("paused").style.opacity = 0;
 	}
 	document.getElementById("paused").style.opacity = 0;
@@ -471,6 +529,7 @@ function restartGame() {
 	if (pressedShift && pressedR) {
 		clearInterval(timerInterval);
 		clearInterval(ghostInterval);
+		clearInterval(ghost1Interval);
 		location.reload();
 	} 
 }
@@ -491,6 +550,7 @@ function dotsCleared(tilemap) {
 function gameOver() {
     clearInterval(timerInterval); // Stop the timers 
 	clearInterval(ghostInterval);
+	clearInterval(ghost1Interval);
 	isGameOver = true;
 }
 
@@ -511,6 +571,7 @@ window.onload = function init() {
 	// This clock determines how fast the ghosts move
 	// More numbers generated means more movement
 	ghostInterval = setInterval(function () {generateRandomNum(tilemap, ghost1Coord, pacmanCoord);}, 250); 
+	ghost1Interval = setInterval(function () {generateRandomNum1(tilemap, ghost2Coord, pacmanCoord);}, 250);
 	render();
 }
 
