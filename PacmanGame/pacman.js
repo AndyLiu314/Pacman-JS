@@ -315,23 +315,23 @@ function RowPathfinding(tilemap, ghostCoord, pacmanCoord) {
 	if (Math.abs(rowDiff) > 0){ // If Pacman is any distance away vertically
 		if (rowDiff > 0){ // If Pacman below 
 			if (g_row < 9 && (tilemap[g_row+1][g_col] != 0)) { // If there are no obstacles
-				robertMove = ranNum < 75 ? 2 : 1;
+				robertMove = ranNum < 80 ? 2 : 1;
 			} else { // If unable to move vertically, go horizontally
 				if (colDiff >= 0){ 
-					robertMove = ranNum < 60 ? 4 : 3;
+					robertMove = ranNum < 70 ? 4 : 3;
 				} else {
-					robertMove = ranNum < 60 ? 3 : 4;
+					robertMove = ranNum < 70 ? 3 : 4;
 				}
 			}
 
 		} else { // If Pacman above
 			if (g_row > 0 && (tilemap[g_row-1][g_col] != 0)) {
-				robertMove = ranNum < 75 ? 1 : 2;
+				robertMove = ranNum < 80 ? 1 : 2;
 			} else { // If unable to move vertically, go horizontally
 				if (colDiff >= 0){
-					robertMove = ranNum < 60 ? 4 : 3;
+					robertMove = ranNum < 70 ? 4 : 3;
 				} else {
-					robertMove = ranNum < 60 ? 3 : 4;
+					robertMove = ranNum < 70 ? 3 : 4;
 				}
 			}
 		}
@@ -339,15 +339,15 @@ function RowPathfinding(tilemap, ghostCoord, pacmanCoord) {
 	} else if (Math.abs(rowDiff) == 0) { // Pacman is the same vertical coordinate as the ghost
 		if (colDiff > 0){ // Pacman is right
 			if (g_col < 8 && (tilemap[g_row][g_col+1] != 0)) { // No obstacles
-				robertMove = ranNum < 60 ? 4 : 3;
+				robertMove = ranNum < 70 ? 4 : 3;
 			} else { // Are obstacles
-				robertMove = ranNum < 60 ? 1 : 2;
+				robertMove = ranNum < 70 ? 1 : 2;
 			} 
 		} else { // Pacman is left
 			if (g_col > 0 && (tilemap[g_row][g_col-1] != 0)) { // No obstacles
-				robertMove = ranNum < 60 ? 3 : 4;
+				robertMove = ranNum < 70 ? 3 : 4;
 			} else { // Are obstacles
-				robertMove = ranNum < 60 ? 2 : 1;
+				robertMove = ranNum < 70 ? 2 : 1;
 			} 
 		}
 	}
@@ -365,23 +365,23 @@ function ColumnPathfinding(tilemap, ghostCoord, pacmanCoord){
 	if (Math.abs(colDiff) > 0){ // If Pacman is any distance away horizontally
 		if (colDiff > 0){ // If Pacman right
 			if (g_col < 8 && (tilemap[g_row][g_col+1] != 0)) { // If there are no obstacles
-				colinMove = ranNum < 75 ? 4 : 3;
+				colinMove = ranNum < 80 ? 4 : 3;
 			} else { // If unable to move horizontally, go vertically
 				if (rowDiff >= 0){ 
-					colinMove = ranNum < 60 ? 2 : 1;
+					colinMove = ranNum < 70 ? 2 : 1;
 				} else {
-					colinMove = ranNum < 60 ? 1 : 2;
+					colinMove = ranNum < 70 ? 1 : 2;
 				}
 			}
 
 		} else { // If Pacman left
 			if (g_col > 0 && (tilemap[g_row][g_col-1] != 0)) { // If there are no obstacles
-				colinMove = ranNum < 75 ? 3 : 4;
+				colinMove = ranNum < 80 ? 3 : 4;
 			} else { // If unable to move horizontally, go vertically
 				if (rowDiff >= 0){
-					colinMove = ranNum < 60 ? 2 : 1;
+					colinMove = ranNum < 70 ? 2 : 1;
 				} else {
-					colinMove = ranNum < 60 ? 1 : 2;
+					colinMove = ranNum < 70 ? 1 : 2;
 				}
 			}
 		}
@@ -389,15 +389,15 @@ function ColumnPathfinding(tilemap, ghostCoord, pacmanCoord){
 	} else if (Math.abs(colDiff) == 0) { // Pacman is the same horizontal coordinate as the ghost
 		if (rowDiff > 0){ // Pacman is below
 			if (g_row < 9 && (tilemap[g_row+1][g_col] != 0)) { // No obstacles
-				colinMove = ranNum < 60 ? 2 : 1;
+				colinMove = ranNum < 70 ? 2 : 1;
 			} else { // Are obstacles
-				colinMove = ranNum < 60 ? 3 : 4;
+				colinMove = ranNum < 70 ? 3 : 4;
 			} 
 		} else { // Pacman is above
 			if (g_row > 0 && (tilemap[g_row-1][g_col] != 0)) { // No obstacles
-				colinMove = ranNum < 60 ? 1 : 2;
+				colinMove = ranNum < 70 ? 1 : 2;
 			} else { // Are obstacles
-				colinMove = ranNum < 60 ? 4 : 3;
+				colinMove = ranNum < 70 ? 4 : 3;
 			} 
 		}
 	}
@@ -436,7 +436,7 @@ function moveGhost(tilemap, ghostCoord, ghostMove){
 	// Removes score when Pacman is caught by ghosts
 	if (ghostCoord[0] == pacmanCoord[0] && ghostCoord[1] == pacmanCoord[1]){
 		if (!isInvincible){
-			score -= 500;
+			score -= 1000;
 			isHit = true;
 			if (score <= 0){
 				score = 0;
@@ -543,8 +543,8 @@ function pauseGame() {
 function resumeGame() {
 	if (!isGameOver && isPaused) {
 		timerInterval = setInterval(myClock, 1000);
-		robertInterval = setInterval(function () {RowPathfinding(tilemap, robertCoord, pacmanCoord);}, 250); 
-		colinInterval = setInterval(function () {ColumnPathfinding(tilemap, colinCoord, pacmanCoord);}, 250);
+		robertInterval = setInterval(function () {RowPathfinding(tilemap, robertCoord, pacmanCoord);}, 300); 
+		colinInterval = setInterval(function () {ColumnPathfinding(tilemap, colinCoord, pacmanCoord);}, 300);
 		document.getElementById("paused").style.opacity = 0;
 	}
 	document.getElementById("paused").style.opacity = 0;
@@ -581,11 +581,11 @@ function gameOver() {
 }
 
 function resumeRobert(){
-	robertInterval = setInterval(function () {RowPathfinding(tilemap, robertCoord, pacmanCoord);}, 250);
+	robertInterval = setInterval(function () {RowPathfinding(tilemap, robertCoord, pacmanCoord);}, 300);
 }
 
 function resumeColin(){
-	colinInterval = setInterval(function () {ColumnPathfinding(tilemap, colinCoord, pacmanCoord);}, 250);
+	colinInterval = setInterval(function () {ColumnPathfinding(tilemap, colinCoord, pacmanCoord);}, 300);
 }
 
 window.onload = function init() {
@@ -604,8 +604,8 @@ window.onload = function init() {
 
 	// This clock determines how fast the ghosts move
 	// More numbers generated means more movement
-	robertInterval = setInterval(function () {RowPathfinding(tilemap, robertCoord, pacmanCoord);}, 250); 
-	colinInterval = setInterval(function () {ColumnPathfinding(tilemap, colinCoord, pacmanCoord);}, 250);
+	robertInterval = setInterval(function () {RowPathfinding(tilemap, robertCoord, pacmanCoord);}, 300); 
+	colinInterval = setInterval(function () {ColumnPathfinding(tilemap, colinCoord, pacmanCoord);}, 300);
 	render();
 }
 
@@ -628,7 +628,7 @@ function render() {
 				return;
 			}
 		} else if (isHit) { // Notify player that they have been hit
-			let message = "HIT! Score - 500. Get Ready To Move!";
+			let message = "HIT! Score - 1000. Get Ready To Move!";
 			alert(message);
 			document.getElementById("score").innerText = score.toString();	
 			isHit = false;
