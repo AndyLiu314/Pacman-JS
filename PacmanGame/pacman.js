@@ -19,8 +19,8 @@ var isPaused = false;
 var pressedShift = false;
 var pressedR = false;
 var pacmanCoord = [9,4]; // Coordinates are written in the form [Row, Column], where row and column refer to the 2d array
-var ghost1Coord = [4,4]; 
-var ghost2Coord = [5,4];
+var robertCoord = [4,4]; 
+var colinCoord = [5,4];
 var ghostMove = 0; // Tracks movement of the ghosts
 var ghostMove1 = 0;
 
@@ -475,18 +475,18 @@ function renderMap(tilemap) {
 
 	// Draw ghosts
 	// Resets ghosts if it caught Pacman
-	let translateGhost1 = translateObject(ghost1, ghost1Coord[0], ghost1Coord[1], 0.18, 0.162);
+	let translateGhost1 = translateObject(ghost1, robertCoord[0], robertCoord[1], 0.18, 0.162);
 	drawShape(gl.TRIANGLES, translateGhost1, 6, ghostColor[0]);
-	if (ghost1Coord[0] == pacmanCoord[0] && ghost1Coord[1] == pacmanCoord[1] && !isGameOver){
-		ghost1Coord[0] = 4;
-		ghost1Coord[1] = 4;
+	if (robertCoord[0] == pacmanCoord[0] && robertCoord[1] == pacmanCoord[1] && !isGameOver){
+		robertCoord[0] = 4;
+		robertCoord[1] = 4;
 	}
 	
-	let translateGhost2 = translateObject(ghost2, ghost2Coord[0], ghost2Coord[1], 0.18, 0.162);
+	let translateGhost2 = translateObject(ghost2, colinCoord[0], colinCoord[1], 0.18, 0.162);
 	drawShape(gl.TRIANGLES, translateGhost2, 6, ghostColor[1]);
-	if (ghost2Coord[0] == pacmanCoord[0] && ghost2Coord[1] == pacmanCoord[1] && !isGameOver){
-		ghost2Coord[0] = 5;
-		ghost2Coord[1] = 4;	
+	if (colinCoord[0] == pacmanCoord[0] && colinCoord[1] == pacmanCoord[1] && !isGameOver){
+		colinCoord[0] = 5;
+		colinCoord[1] = 4;	
 	}
 
 	ghostMove = 0;
@@ -517,8 +517,8 @@ function pauseGame() {
 function resumeGame() {
 	if (!isGameOver && isPaused) {
 		timerInterval = setInterval(myClock, 1000);
-		robertInterval = setInterval(function () {generateRandomNum(tilemap, ghost1Coord, pacmanCoord);}, 250); 
-		colinInterval = setInterval(function () {generateRandomNum1(tilemap, ghost2Coord, pacmanCoord);}, 250);
+		robertInterval = setInterval(function () {generateRandomNum(tilemap, robertCoord, pacmanCoord);}, 250); 
+		colinInterval = setInterval(function () {generateRandomNum1(tilemap, colinCoord, pacmanCoord);}, 250);
 		document.getElementById("paused").style.opacity = 0;
 	}
 	document.getElementById("paused").style.opacity = 0;
@@ -570,8 +570,8 @@ window.onload = function init() {
 
 	// This clock determines how fast the ghosts move
 	// More numbers generated means more movement
-	robertInterval = setInterval(function () {generateRandomNum(tilemap, ghost1Coord, pacmanCoord);}, 250); 
-	colinInterval = setInterval(function () {generateRandomNum1(tilemap, ghost2Coord, pacmanCoord);}, 250);
+	robertInterval = setInterval(function () {generateRandomNum(tilemap, robertCoord, pacmanCoord);}, 250); 
+	colinInterval = setInterval(function () {generateRandomNum1(tilemap, colinCoord, pacmanCoord);}, 250);
 	render();
 }
 
@@ -604,8 +604,8 @@ function render() {
 	gl.clear( gl.COLOR_BUFFER_BIT ); 
 	drawShape(gl.TRIANGLES, pathBuffer, 6, pathbufferColor);
 	tilemap = movePacman(tilemap);
-	ghost1Coord = moveGhost(tilemap, ghost1Coord, ghostMove);
-	ghost2Coord = moveGhost(tilemap, ghost2Coord, ghostMove1);
+	robertCoord = moveGhost(tilemap, robertCoord, ghostMove);
+	colinCoord = moveGhost(tilemap, colinCoord, ghostMove1);
 	renderMap(tilemap);
 	window.requestAnimFrame(render);
 }
