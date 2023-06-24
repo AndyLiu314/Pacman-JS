@@ -15,7 +15,7 @@ move Pacman (represented as a 2 on the 2d array) tilemap[row][column-1]. Any dot
 will be added. That specific dot will also no longer be rendered since it is removed from the tilemap. The controls and 
 other functionalities within the game are exactly the same as stated in the pdf guidelines (this includes the functionality 
 of the superdot which makes the player invincible for a single hit. This can be seen by the player turning purple after 
-eating the powerup).
+eating the powerup. The powerup is placed in a difficult position to reach to prevent players from getting it easily).
 
 **General Ghost Design:** 
 The ghosts were designed as seperate entities from the 2d array tilemap. This was to avoid the ghosts' movement affecting
@@ -39,3 +39,8 @@ there isn't enough points to survive a hit. Players have to act fast and be mind
 risk getting trapped. The encircling movements of the ghosts, increased point deduction, and fast movement speed have
 all been done to balance this game and make it harder. It is a challenge to win with many points and dying can happen
 quickly if you are careless leading to a somewhat balanced game (in my opinion).
+
+**Note:** 
+My PC is pretty fast so it is able to render a lot of movement. Slower machines may stutter and pacman may struggle to
+run away fast enough. In those cases, lowering the AI movespeed in all the setInterval function calls will help 
+make it easier for slower machines.

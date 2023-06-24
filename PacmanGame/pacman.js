@@ -530,7 +530,7 @@ function myClock() {
 	}
 }
 
-function pauseGame() {
+function pauseGame() { // Pause and resume functions mainly just manipulate the setInterval timers
 	if (!isGameOver){
 		clearInterval(timerInterval);
 		clearInterval(robertInterval);
