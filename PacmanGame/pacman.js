@@ -318,9 +318,9 @@ function RowPathfinding(tilemap, ghostCoord, pacmanCoord) {
 				robertMove = ranNum < 85 ? 2 : 1;
 			} else { // If unable to move vertically, go horizontally
 				if (colDiff >= 0){ 
-					robertMove = ranNum < 70 ? 4 : 3;
+					robertMove = ranNum < 75 ? 4 : 3;
 				} else {
-					robertMove = ranNum < 70 ? 3 : 4;
+					robertMove = ranNum < 75 ? 3 : 4;
 				}
 			}
 
@@ -329,9 +329,9 @@ function RowPathfinding(tilemap, ghostCoord, pacmanCoord) {
 				robertMove = ranNum < 85 ? 1 : 2;
 			} else { // If unable to move vertically, go horizontally
 				if (colDiff >= 0){
-					robertMove = ranNum < 70 ? 4 : 3;
+					robertMove = ranNum < 75 ? 4 : 3;
 				} else {
-					robertMove = ranNum < 70 ? 3 : 4;
+					robertMove = ranNum < 75 ? 3 : 4;
 				}
 			}
 		}
@@ -339,15 +339,15 @@ function RowPathfinding(tilemap, ghostCoord, pacmanCoord) {
 	} else if (Math.abs(rowDiff) == 0) { // Pacman is the same vertical coordinate as the ghost
 		if (colDiff > 0){ // Pacman is right
 			if (g_col < 8 && (tilemap[g_row][g_col+1] != 0)) { // No obstacles
-				robertMove = ranNum < 70 ? 4 : 3;
+				robertMove = ranNum < 75 ? 4 : 3;
 			} else { // Are obstacles
-				robertMove = ranNum < 70 ? 1 : 2;
+				robertMove = ranNum < 85 ? 1 : 2;
 			} 
 		} else { // Pacman is left
 			if (g_col > 0 && (tilemap[g_row][g_col-1] != 0)) { // No obstacles
-				robertMove = ranNum < 70 ? 3 : 4;
+				robertMove = ranNum < 75 ? 3 : 4;
 			} else { // Are obstacles
-				robertMove = ranNum < 70 ? 2 : 1;
+				robertMove = ranNum < 85 ? 2 : 1;
 			} 
 		}
 	}
@@ -368,9 +368,9 @@ function ColumnPathfinding(tilemap, ghostCoord, pacmanCoord){
 				colinMove = ranNum < 85 ? 4 : 3;
 			} else { // If unable to move horizontally, go vertically
 				if (rowDiff >= 0){ 
-					colinMove = ranNum < 70 ? 2 : 1;
+					colinMove = ranNum < 75 ? 2 : 1;
 				} else {
-					colinMove = ranNum < 70 ? 1 : 2;
+					colinMove = ranNum < 75 ? 1 : 2;
 				}
 			}
 
@@ -379,9 +379,9 @@ function ColumnPathfinding(tilemap, ghostCoord, pacmanCoord){
 				colinMove = ranNum < 85 ? 3 : 4;
 			} else { // If unable to move horizontally, go vertically
 				if (rowDiff >= 0){
-					colinMove = ranNum < 70 ? 2 : 1;
+					colinMove = ranNum < 75 ? 2 : 1;
 				} else {
-					colinMove = ranNum < 70 ? 1 : 2;
+					colinMove = ranNum < 75 ? 1 : 2;
 				}
 			}
 		}
@@ -389,15 +389,15 @@ function ColumnPathfinding(tilemap, ghostCoord, pacmanCoord){
 	} else if (Math.abs(colDiff) == 0) { // Pacman is the same horizontal coordinate as the ghost
 		if (rowDiff > 0){ // Pacman is below
 			if (g_row < 9 && (tilemap[g_row+1][g_col] != 0)) { // No obstacles
-				colinMove = ranNum < 70 ? 2 : 1;
+				colinMove = ranNum < 75 ? 2 : 1;
 			} else { // Are obstacles
-				colinMove = ranNum < 70 ? 3 : 4;
+				colinMove = ranNum < 85 ? 3 : 4;
 			} 
 		} else { // Pacman is above
 			if (g_row > 0 && (tilemap[g_row-1][g_col] != 0)) { // No obstacles
-				colinMove = ranNum < 70 ? 1 : 2;
+				colinMove = ranNum < 75 ? 1 : 2;
 			} else { // Are obstacles
-				colinMove = ranNum < 70 ? 4 : 3;
+				colinMove = ranNum < 85 ? 4 : 3;
 			} 
 		}
 	}
