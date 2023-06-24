@@ -502,6 +502,8 @@ function renderMap(tilemap) {
 	if (robertCoord[0] == pacmanCoord[0] && robertCoord[1] == pacmanCoord[1] && !isGameOver){
 		robertCoord[0] = 4;
 		robertCoord[1] = 4;
+		clearInterval(robertInterval);
+		setTimeout(resumeRobert, 1000);
 	}
 	
 	let translateColin = translateObject(colin, colinCoord[0], colinCoord[1], 0.18, 0.162);
@@ -509,6 +511,8 @@ function renderMap(tilemap) {
 	if (colinCoord[0] == pacmanCoord[0] && colinCoord[1] == pacmanCoord[1] && !isGameOver){
 		colinCoord[0] = 5;
 		colinCoord[1] = 4;	
+		clearInterval(colinInterval);
+		setTimeout(resumeColin, 1000);
 	}
 
 	robertMove = 0;
@@ -574,6 +578,14 @@ function gameOver() {
 	clearInterval(robertInterval);
 	clearInterval(colinInterval);
 	isGameOver = true;
+}
+
+function resumeRobert(){
+	robertInterval = setInterval(function () {RowPathfinding(tilemap, robertCoord, pacmanCoord);}, 250);
+}
+
+function resumeColin(){
+	colinInterval = setInterval(function () {ColumnPathfinding(tilemap, colinCoord, pacmanCoord);}, 250);
 }
 
 window.onload = function init() {
